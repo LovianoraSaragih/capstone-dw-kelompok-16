@@ -1,2 +1,4 @@
 id,tanggal,nim,tahap,seri_kode,keputusan,alternatif_ditolak,alasan,dampak_baris
 K-001,2026-11-03,12345678,silver,var543,"periode bulanan Februari/Agustus disimpan sebagai jenis_periode=bulan","rata-rata ke tahunan","sumber menerbitkan dua kali setahun; agregasi dilakukan di Gold",0
+K-002,2026-11-12,124450105,silver,var2011,"Mempertahankan lima wilayah yang tidak tersedia pada 2023 sebagai kosong pada grid; tidak melakukan imputasi","Mengisi dengan interpolasi atau rata-rata","Metadata sumber menyebut sebagian estimasi provinsi tidak ditampilkan karena RSE tinggi; nilai asli tidak tersedia",5
+K-003,2026-11-12,124450105,silver,var1254,"Tidak melakukan imputasi untuk periode di luar 2015-2016 dan mempertahankan data sesuai periode publikasi","Mengestimasi nilai tahun lain berdasarkan dua tahun pengamatan","Seri hanya memiliki dua tahun pengamatan sehingga tidak cukup untuk menyimpulkan pola perubahan",0
