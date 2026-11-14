@@ -1,7 +1,7 @@
-
 """Pembaca data mentah ILOSTAT SDMX untuk Kasus 16.
 
-Membaca CSV, DSD, dan metadata JSON. Tidak melakukan pembersihan data.
+Membaca 3 CSV, 3 DSD JSON, dan 1 dataflow JSON.
+Tidak melakukan pembersihan data.
 """
 
 import json
@@ -37,6 +37,16 @@ def cari_berkas(nama, folder):
     return hasil[0]
 
 
+def lineage_json(jalur):
+    """Mencatat asal dan checksum berkas JSON."""
+    berkas_raw = jalur.relative_to(RAW).as_posix()
+
+    return {
+        "_berkas_raw": berkas_raw,
+        "_sha256_raw": sha256_raw(berkas_raw),
+    }
+
+
 def informasi_dsd(jalur):
     """Membaca dimensi dan referensi codelist dari DSD."""
     data = baca_json(jalur)
@@ -64,10 +74,51 @@ def informasi_dsd(jalur):
         "nama": struktur.get("name"),
         "dimensi": dimensi,
         "obs_status": obs_status,
+        "lineage": lineage_json(jalur),
     }
 
 
-def baca_seri(kode):
+def baca_dataflow():
+    """Membaca metadata dataflow untuk ketiga seri ILOSTAT."""
+    jalur = cari_berkas(
+        "dataflow.json", Path("ilostat")
+    )
+
+    data = baca_json(jalur)
+    daftar = data["data"]["dataflows"]
+    asal = lineage_json(jalur)
+
+    hasil = {}
+
+    for kode in SERI:
+        id_dataflow = f"DF_{kode}"
+
+        cocok = [
+            item for item in daftar
+            if item.get("id") == id_dataflow
+        ]
+
+        if len(cocok) != 1:
+            raise ValueError(
+                f"Diharapkan 1 dataflow {id_dataflow}, "
+                f"ditemukan {len(cocok)}."
+            )
+
+        hasil[kode] = {
+            "metadata": cocok[0],
+            "lineage": asal,
+        }
+
+    print(
+        f"{asal['_berkas_raw']}: "
+        f"{len(daftar)} dataflow | "
+        f"{len(hasil)} metadata seri ditemukan"
+    )
+
+    return hasil
+
+
+def baca_seri(kode, dataflow):
     """Membaca satu seri CSV beserta DSD dan lineage."""
     nama_csv = f"DF_{kode}.csv"
 
@@ -79,16 +130,13 @@ def baca_seri(kode):
         f"{kode}.json", Path("ilostat")
     )
 
-    # Baca metadata DSD dan pastikan dimensi dipahami
     dsd = informasi_dsd(jalur_dsd)
 
-    # Baca CSV tanpa melakukan pembersihan
     df = pd.read_csv(
         jalur_csv,
         dtype={"TIME_PERIOD": "string", "OBS_STATUS": "string"},
     )
 
-    # Pastikan dimensi yang didefinisikan DSD tersedia di CSV
     kurang = [
         kolom for kolom in dsd["dimensi"]
         if kolom not in df.columns
@@ -99,30 +147,30 @@ def baca_seri(kode):
             f"{kode}: dimensi DSD tidak ditemukan di CSV: {kurang}"
         )
 
-    # Tambahkan lineage dari MANIFEST.csv
     berkas_raw = jalur_csv.relative_to(RAW).as_posix()
 
     df["_berkas_raw"] = berkas_raw
     df["_sha256_raw"] = sha256_raw(berkas_raw)
+
+    df.attrs["ilostat_dsd"] = dsd
+    df.attrs["ilostat_dataflow"] = dataflow[kode]
 
     print(
         f"{berkas_raw}: {len(df):,} baris | "
         f"dimensi: {', '.join(dsd['dimensi'])}"
     )
 
-    return df, dsd
+    return df
 
 
 def jalankan():
     """Membaca seluruh seri ILOSTAT sebagai DataFrame terpisah."""
+    dataflow = baca_dataflow()
     hasil = {}
 
     for kode in SERI:
-        df, dsd = baca_seri(kode)
-
+        df = baca_seri(kode, dataflow)
         nama_sumber = f"ilostat_{kode}"
-        df.attrs["ilostat_dsd"] = dsd
-
         hasil[nama_sumber] = df
 
     print("\nRingkasan ekstraksi ILOSTAT:")
