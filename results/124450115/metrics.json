@@ -1,0 +1,24 @@
+{
+  "metrik": {
+    "berkas_dibaca": 7,
+    "baris_mentah": 1203,
+    "format": 4,
+    "baris_silver": 1137,
+    "sel_kosong_grid": 292,
+    "outlier_ditandai": 25,
+    "patahan_ditandai": 0,
+    "aturan_validasi": 7,
+    "aturan_lolos": 7,
+    "kolom_terdokumentasi": 17,
+    "outlier_z": 13,
+    "outlier_iqr": 25,
+    "patahan_kandidat": 0,
+    "duplikat_kunci": 0,
+    "sel_kosong_grid_var2011": 29,
+    "sel_kosong_grid_var2016": 255,
+    "sel_kosong_grid_var1254": 8
+  },
+  "seed": 0,
+  "data_hash": "7dfa0610bf5f1b0a83d8a7695addd915969ade3850affc194eb5c3c7e7c1a969",
+  "perangkat": "Windows AMD64 Python 3.13.15"
+}
