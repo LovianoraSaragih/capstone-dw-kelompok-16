@@ -5,7 +5,8 @@ DataFrame mentah yang setia pada sumbernya: jangan membersihkan di sini, cukup r
 dan catat asal tiap baris (`_berkas_raw` relatif data/raw/, `_sha256_raw` dari src.common.manifest).
 """
 
+from .ilostat import jalankan as ekstrak_ilostat
 
 def jalankan():
     """Kembalikan {nama_sumber: DataFrame mentah}."""
-    raise NotImplementedError("Tahap 1: tulis pembaca untuk tiap format di data/raw/")
+    return ekstrak_ilostat()
