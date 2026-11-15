@@ -1,57 +1,44 @@
+"""Tahap 1 — Ekstraksi (pertemuan X). Milik tim.
 
-"""Tahap 1 — Ekstraksi seluruh sumber data mentah."""
+Baca setiap berkas di data/raw/ (CSV, JSON WebAPI BPS, XLSX BNPB, SDMX ILO, JSON WDI) menjadi
+DataFrame mentah yang setia pada sumbernya: jangan membersihkan di sini, cukup ratakan struktur
+dan catat asal tiap baris (`_berkas_raw` relatif data/raw/, `_sha256_raw` dari src.common.manifest).
+"""
+import json
+from pathlib import Path
 
-import pandas as pd
+from .bps import baca_bps, cek_csv
+from .ilostat import baca_ilostat
+from .wdi import baca_wdi
 
-from src.common.manifest import RAW, baca
-from .bps import jalankan as ekstrak_bps
-from .wdi import jalankan as ekstrak_wdi
-from .ilostat import jalankan as ekstrak_ilostat
+AKAR = Path(__file__).resolve().parents[2]
+INTERIM = AKAR / "data" / "interim"
 
 
 def jalankan():
-    """Gabungkan seluruh keluaran pembaca menjadi satu DataFrame mentah."""
+    """Kembalikan {nama_sumber: DataFrame mentah}."""
+    bps, meta_bps = baca_bps()
+    ilostat, meta_ilostat = baca_ilostat()
+    wdi, meta_wdi = baca_wdi()
+    cek = cek_csv(bps)
 
-    # Membaca masing-masing sumber
-    bps = ekstrak_bps()
-    wdi = ekstrak_wdi()
-    ilostat = ekstrak_ilostat()
-
-    # Mengumpulkan seluruh DataFrame
-    daftar_df = [bps, wdi, *ilostat.values()]
-
-    # Menyimpan metadata dan lineage metadata sebelum penggabungan
-    metadata = {
-        "bps": bps.attrs.get("metadata_bps", {}),
-        "wdi": wdi.attrs.get("metadata_wdi", {}),
-        "ilostat": {
-            nama: {
-                "dsd": df.attrs.get("ilostat_dsd"),
-                "dataflow": df.attrs.get("ilostat_dataflow"),
-            }
-            for nama, df in ilostat.items()
-        },
+    berkas = set(bps["_berkas_raw"]) | set(ilostat["_berkas_raw"]) | set(wdi["_berkas_raw"])
+    metrik = {
+        "baris_mentah": meta_bps["baris_mentah"] + meta_ilostat["baris_mentah"] + meta_wdi["baris_mentah"],
+        "format": 4,
+        "berkas_dibaca": len(berkas),
+        "bps": meta_bps,
+        "ilostat": meta_ilostat,
+        "wdi": meta_wdi,
+        "cek_csv": cek,
     }
-
-    # Menghindari konflik atribut ketika concat
-    for df in daftar_df:
-        df.attrs = {}
-
-    # Menggabungkan tanpa menyeragamkan kolom sumber
-    hasil = pd.concat(
-        daftar_df,
-        ignore_index=True,
-        sort=False,
+    INTERIM.mkdir(parents=True, exist_ok=True)
+    (INTERIM / "ekstraksi_metrik.json").write_text(
+        json.dumps(metrik, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
-
-    hasil.attrs["metadata_ekstraksi"] = metadata
-    hasil.attrs["berkas_dibaca"] = len(baca(RAW))
-    hasil.attrs["format"] = 2
-
-    print("\n=== RINGKASAN EKSTRAKSI GABUNGAN ===")
-    print(f"Jumlah berkas manifest: {hasil.attrs['berkas_dibaca']}")
-    print(f"Jumlah baris mentah: {len(hasil)}")
-    print(f"Jumlah kolom: {len(hasil.columns)}")
-    print(f"Jumlah sumber: 3")
-
-    return hasil
+    beda = sum(v["beda_nilai"] for v in cek.values())
+    print(
+        f"ekstraksi: BPS {len(bps)} baris, ILOSTAT {len(ilostat)}, WDI {len(wdi)}; "
+        f"uji silang CSV {beda} beda nilai dari {sum(v['baris_csv'] for v in cek.values())} baris"
+    )
+    return {"bps": bps, "ilostat": ilostat, "wdi": wdi}
