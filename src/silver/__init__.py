@@ -1,61 +1,55 @@
-"""Tahap Silver: penyeragaman data mentah BPS."""
+"""Tahap 2–4 — Profil, pembersihan, dan penyeragaman ke Silver (pertemuan II–VII). Milik tim.
 
+Keluaran: data/silver/silver.parquet dengan skema minimal di src/common/skema.py.
+Satu baris = satu seri x wilayah x periode x rincian x berkas sumber. Nilai dari sumber berbeda
+TIDAK digabung di sini. Setiap keputusan pembersihan dicatat di log-keputusan.csv.
+"""
+import json
 from pathlib import Path
 
-import pandas as pd
+from . import pembersihan, profil, transformasi
 
-from src.common.skema import KOLOM, periksa_silver
-from src.common.manifest import baca
-
-
-SATUAN = {
-    "var2011": "Persen",
-    "var1254": "Persen",
-    "var2016": "Persen",
-}
+AKAR = Path(__file__).resolve().parents[2]
+INTERIM = AKAR / "data" / "interim"
+REPORTS = AKAR / "reports"
 
 
 def jalankan(mentah):
-    """Transformasi tiga seri BPS menjadi tabel Silver."""
-    hasil = []
+    """Terima keluaran tahap 1, tulis dan kembalikan DataFrame Silver."""
+    df = transformasi.ke_silver(mentah)
+    df = profil.tandai_outlier(df)
+    df = pembersihan.tandai_patahan(df)
 
-    for seri, df in mentah.items():
-        data = pd.DataFrame({
-            "sumber": "BPS",
-            "seri_kode": seri,
-            "wilayah_kode": pd.to_numeric(
-                df["wilayah_id"], errors="raise"
-            ).astype("int64"),
-            "nama_wilayah": df["wilayah"].astype("string"),
-            "periode": pd.to_numeric(
-                df["tahun"], errors="raise"
-            ).astype("int64").astype("string"),
-            "jenis_periode": "tahun",
-            "rincian": df["turvar"].astype("string"),
-            "nilai": pd.to_numeric(df["nilai"], errors="raise"),
-            "satuan": SATUAN[seri],
-            "_berkas_raw": df["_berkas_raw"],
-            "_sha256_raw": df["_sha256_raw"],
-        })
+    grid, ringkas = pembersihan.grid_bps(df)
+    duplikat = pembersihan.cek_duplikat(df)
 
-        hasil.append(data[KOLOM])
+    profil.tulis_laporan(df, REPORTS)
+    pembersihan.tulis_laporan(df, grid, ringkas, duplikat, REPORTS)
+    transformasi.tulis_silver(df)
 
-    silver = pd.concat(hasil, ignore_index=True)
-
-    salah = periksa_silver(silver, baca())
-    if salah:
-        raise ValueError(
-            "Silver gagal diperiksa:\n- " + "\n- ".join(salah)
-        )
-
-    folder = Path("data/silver")
-    folder.mkdir(parents=True, exist_ok=True)
-
-    silver.to_parquet(folder / "silver.parquet", index=False)
-
-    print(f"Silver selesai: {len(silver):,} baris")
-    print(f"Jumlah seri: {silver['seri_kode'].nunique()}")
-    print(f"Jumlah wilayah: {silver['wilayah_kode'].nunique()}")
-    print(f"File: {folder / 'silver.parquet'}")
-
-    return silver
+    metrik = {
+        "baris_silver": int(len(df)),
+        "sel_kosong_grid": int(sum(v["sel_kosong"] for v in ringkas.values())),
+        "sel_kosong_grid_per_seri": {k: v["sel_kosong"] for k, v in ringkas.items()},
+        "sel_grid_per_seri": {k: v["sel_grid"] for k, v in ringkas.items()},
+        "duplikat_kunci": duplikat["jumlah_baris_kembar"],
+        "outlier_z": int(df["outlier_z"].sum()),
+        "outlier_iqr": int(df["outlier_iqr"].sum()),
+        "outlier_ditandai": int((df["outlier_z"] | df["outlier_iqr"]).sum()),
+        "patahan_definisi": int(df["patahan_definisi"].sum()),
+        "patahan_kandidat": int(df["patahan_kandidat"].sum()),
+        "nilai_min": float(df["nilai"].min()),
+        "nilai_max": float(df["nilai"].max()),
+        "seri": sorted(df["seri_kode"].unique().tolist()),
+        "satuan": {k: sorted(v.tolist()) for k, v in df.groupby("seri_kode")["satuan"].unique().items()},
+        "rincian": {k: sorted(v.tolist()) for k, v in df.groupby("seri_kode")["rincian"].unique().items()},
+    }
+    INTERIM.mkdir(parents=True, exist_ok=True)
+    (INTERIM / "silver_metrik.json").write_text(
+        json.dumps(metrik, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
+    print(
+        f"silver: {len(df)} baris, {df['seri_kode'].nunique()} seri, "
+        f"{df['wilayah_kode'].nunique()} wilayah, grid kosong {metrik['sel_kosong_grid']}"
+    )
+    return df

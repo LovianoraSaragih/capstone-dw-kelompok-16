@@ -1,0 +1,26 @@
+sumber,seri_kode,wilayah_kode,nama_wilayah,periode,rincian,nilai,outlier_z,outlier_iqr
+bps,var1254,6300,KALIMANTAN SELATAN,2015,total,1.95,False,True
+bps,var1254,6300,KALIMANTAN SELATAN,2016,total,2.01,False,True
+bps,var1254,9999,INDONESIA,2015,total,13.08,True,True
+bps,var1254,9999,INDONESIA,2016,total,14.4,True,True
+bps,var2011,5300,NUSA TENGGARA TIMUR,2018,total,31.41,False,True
+bps,var2011,5300,NUSA TENGGARA TIMUR,2019,total,31.7,False,True
+bps,var2011,5300,NUSA TENGGARA TIMUR,2020,total,31.45,False,True
+bps,var2016,3400,DI YOGYAKARTA,2022,air_minum,71.88,False,True
+bps,var2016,3400,DI YOGYAKARTA,2023,air_minum,68.16,False,True
+bps,var2016,5300,NUSA TENGGARA TIMUR,2019,fasilitas_kesehatan,51.92,False,True
+bps,var2016,5300,NUSA TENGGARA TIMUR,2020,fasilitas_kesehatan,54.43,False,True
+bps,var2016,5300,NUSA TENGGARA TIMUR,2021,fasilitas_kesehatan,56.33,False,True
+bps,var2016,5300,NUSA TENGGARA TIMUR,2022,fasilitas_kesehatan,56.67,False,True
+bps,var2016,5300,NUSA TENGGARA TIMUR,2023,fasilitas_kesehatan,43.5,True,True
+bps,var2016,9400,PAPUA,2019,fasilitas_kesehatan,35.55,True,True
+bps,var2016,9400,PAPUA,2019,sanitasi,38.27,True,True
+bps,var2016,9400,PAPUA,2020,fasilitas_kesehatan,36.44,True,True
+bps,var2016,9400,PAPUA,2020,sanitasi,40.31,True,True
+bps,var2016,9400,PAPUA,2021,fasilitas_kesehatan,36.97,True,True
+bps,var2016,9400,PAPUA,2021,sanitasi,40.81,True,True
+bps,var2016,9400,PAPUA,2022,fasilitas_kesehatan,40.91,True,True
+bps,var2016,9400,PAPUA,2022,sanitasi,40.34,True,True
+bps,var2016,9400,PAPUA,2023,fasilitas_kesehatan,31.78,True,True
+bps,var2016,9400,PAPUA,2023,sanitasi,43.0,True,True
+ilostat,SDG_0131_SEX_SOC_RT,9999,Indonesia,2021,SEX=SEX_T;SOC=SOC_CONTIG_PENSION,31.2,False,True

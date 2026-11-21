@@ -1,30 +1,44 @@
-"""Tahap 1 — Ekstraksi data mentah BPS."""
+"""Tahap 1 — Ekstraksi (pertemuan X). Milik tim.
 
+Baca setiap berkas di data/raw/ (CSV, JSON WebAPI BPS, XLSX BNPB, SDMX ILO, JSON WDI) menjadi
+DataFrame mentah yang setia pada sumbernya: jangan membersihkan di sini, cukup ratakan struktur
+dan catat asal tiap baris (`_berkas_raw` relatif data/raw/, `_sha256_raw` dari src.common.manifest).
+"""
+import json
 from pathlib import Path
 
-import pandas as pd
+from .bps import baca_bps, cek_csv
+from .ilostat import baca_ilostat
+from .wdi import baca_wdi
 
-from src.common.manifest import RAW, sha256_raw
-
-
-BERKAS = {
-    "var2011": "bps/2026-10-20/sdg10_10_2_1_v2011.csv",
-    "var1254": "bps/2026-10-20/sdg17_17_1_1_v1254.csv",
-    "var2016": "bps/2026-10-20/sdg1_1_4_1_v2016.csv",
-}
+AKAR = Path(__file__).resolve().parents[2]
+INTERIM = AKAR / "data" / "interim"
 
 
 def jalankan():
-    """Baca tiga CSV BPS dan kembalikan data mentah beserta lineage."""
-    hasil = {}
+    """Kembalikan {nama_sumber: DataFrame mentah}."""
+    bps, meta_bps = baca_bps()
+    ilostat, meta_ilostat = baca_ilostat()
+    wdi, meta_wdi = baca_wdi()
+    cek = cek_csv(bps)
 
-    for seri, berkas in BERKAS.items():
-        path = RAW / berkas
-
-        df = pd.read_csv(path)
-        df["_berkas_raw"] = berkas
-        df["_sha256_raw"] = sha256_raw(berkas)
-
-        hasil[seri] = df
-
-    return hasil
+    berkas = set(bps["_berkas_raw"]) | set(ilostat["_berkas_raw"]) | set(wdi["_berkas_raw"])
+    metrik = {
+        "baris_mentah": meta_bps["baris_mentah"] + meta_ilostat["baris_mentah"] + meta_wdi["baris_mentah"],
+        "format": 4,
+        "berkas_dibaca": len(berkas),
+        "bps": meta_bps,
+        "ilostat": meta_ilostat,
+        "wdi": meta_wdi,
+        "cek_csv": cek,
+    }
+    INTERIM.mkdir(parents=True, exist_ok=True)
+    (INTERIM / "ekstraksi_metrik.json").write_text(
+        json.dumps(metrik, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
+    beda = sum(v["beda_nilai"] for v in cek.values())
+    print(
+        f"ekstraksi: BPS {len(bps)} baris, ILOSTAT {len(ilostat)}, WDI {len(wdi)}; "
+        f"uji silang CSV {beda} beda nilai dari {sum(v['baris_csv'] for v in cek.values())} baris"
+    )
+    return {"bps": bps, "ilostat": ilostat, "wdi": wdi}
