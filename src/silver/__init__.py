@@ -1,11 +1,61 @@
-"""Tahap 2–4 — Profil, pembersihan, dan penyeragaman ke Silver (pertemuan II–VII). Milik tim.
+"""Tahap Silver: penyeragaman data mentah BPS."""
 
-Keluaran: data/silver/silver.parquet dengan skema minimal di src/common/skema.py.
-Satu baris = satu seri x wilayah x periode x rincian x berkas sumber. Nilai dari sumber berbeda
-TIDAK digabung di sini. Setiap keputusan pembersihan dicatat di log-keputusan.csv.
-"""
+from pathlib import Path
+
+import pandas as pd
+
+from src.common.skema import KOLOM, periksa_silver
+from src.common.manifest import baca
+
+
+SATUAN = {
+    "var2011": "Persen",
+    "var1254": "Persen",
+    "var2016": "Persen",
+}
 
 
 def jalankan(mentah):
-    """Terima keluaran tahap 1, tulis dan kembalikan DataFrame Silver."""
-    raise NotImplementedError("Tahap 2–4: profil, missing, outlier/patahan, duplikat, format periode dan wilayah")
+    """Transformasi tiga seri BPS menjadi tabel Silver."""
+    hasil = []
+
+    for seri, df in mentah.items():
+        data = pd.DataFrame({
+            "sumber": "BPS",
+            "seri_kode": seri,
+            "wilayah_kode": pd.to_numeric(
+                df["wilayah_id"], errors="raise"
+            ).astype("int64"),
+            "nama_wilayah": df["wilayah"].astype("string"),
+            "periode": pd.to_numeric(
+                df["tahun"], errors="raise"
+            ).astype("int64").astype("string"),
+            "jenis_periode": "tahun",
+            "rincian": df["turvar"].astype("string"),
+            "nilai": pd.to_numeric(df["nilai"], errors="raise"),
+            "satuan": SATUAN[seri],
+            "_berkas_raw": df["_berkas_raw"],
+            "_sha256_raw": df["_sha256_raw"],
+        })
+
+        hasil.append(data[KOLOM])
+
+    silver = pd.concat(hasil, ignore_index=True)
+
+    salah = periksa_silver(silver, baca())
+    if salah:
+        raise ValueError(
+            "Silver gagal diperiksa:\n- " + "\n- ".join(salah)
+        )
+
+    folder = Path("data/silver")
+    folder.mkdir(parents=True, exist_ok=True)
+
+    silver.to_parquet(folder / "silver.parquet", index=False)
+
+    print(f"Silver selesai: {len(silver):,} baris")
+    print(f"Jumlah seri: {silver['seri_kode'].nunique()}")
+    print(f"Jumlah wilayah: {silver['wilayah_kode'].nunique()}")
+    print(f"File: {folder / 'silver.parquet'}")
+
+    return silver
