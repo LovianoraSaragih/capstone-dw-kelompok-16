@@ -2,12 +2,29 @@
 
 | Aturan | Status | Detail |
 |---|---|---|
-| skema_minimal | LOLOS | 11 kolom, kunci unik, periode, lineage cocok |
-| nilai_persen_0_100 | LOLOS | 0 baris di luar 0-100 |
+| skema_minimal | LOLOS | Kolom wajib, periode, dan lineage sesuai |
+| nilai_persen_0_100 | LOLOS | 0 baris di luar rentang 0-100 |
 | wilayah_kode_valid | LOLOS | 0 kode tidak valid |
-| satuan_seragam_per_seri | LOLOS | 0 seri punya lebih dari satu satuan |
+| satuan_seragam_per_seri | LOLOS | 0 seri memiliki lebih dari satu satuan |
 | rincian_terisi | LOLOS | 0 rincian kosong |
+| silver_kunci_unik | LOLOS | 0 baris duplikat pada kunci Silver |
+| imputasi_memiliki_penanda | LOLOS | Tidak ada imputasi nilai dalam transformasi Silver; nilai berasal dari observasi sumber. Imputasi di masa depan wajib memakai is_imputed. |
+| kelengkapan_panel_per_seri | LOLOS | 3 seri dilaporkan |
 | gold_panel_terbentuk | LOLOS | 280 baris |
 | gold_kunci_unik | LOLOS | 0 duplikat |
 
-Total: 7/7 aturan lolos.
+## Kelengkapan panel per seri
+
+Sumber: `reports/kelengkapan.csv`.
+
+| Seri | Sel grid | Terisi | Kosong | Kelengkapan |
+|---|---:|---:|---:|---:|
+| var2011 | 234 | 205 | 29 | 87.61% |
+| var2016 | 780 | 525 | 255 | 67.31% |
+| var1254 | 78 | 70 | 8 | 89.74% |
+
+## Ringkasan
+
+Total: 10/10 aturan lolos.
+
+Nilai kosong pada grid menunjukkan tidak adanya observasi sumber dan tidak diimputasi.

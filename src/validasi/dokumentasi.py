@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
+
 DESKRIPSI_KOLOM = {
     "sumber": ("string", "—", "tidak", "bps, ilostat, wdi", "folder data/raw (K-016)", "nama sumber data"),
     "seri_kode": ("string", "—", "tidak", "var2011, var2016, var1254, SDG_*, SI.*", "metadata sumber", "kode indikator/seri"),
@@ -13,7 +14,7 @@ DESKRIPSI_KOLOM = {
     "jenis_periode": ("string", "—", "tidak", "tahun", "keputusan log (K-012)", "granulasi waktu observasi (semua seri tahunan)"),
     "rincian": ("string", "—", "tidak", "total, air_minum, sanitasi, mobilitas, fasilitas_kesehatan, kode dimensi ILOSTAT", "turvar BPS / DSD ILOSTAT (K-004, K-005)", "dimensi disagregasi indikator; lihat tabel pemetaan"),
     "nilai": ("float", "persen", "tidak", "0–100", "datacontent / OBS_VALUE / value", "nilai numerik proporsi indikator"),
-    "satuan": ("string", "—", "tidak", "persen", "metadata + keputusan log (K-002, K-021, K-022)", "unit pengukuran indikator"),
+    "satuan": ("string", "—", "tidak", "persen", "metadata sumber dan log-keputusan.csv (K-002, K-021, K-022)", "var2011 dan var1254 mengikuti keputusan K-002; seri lain mengikuti metadata sumber"),
     "_berkas_raw": ("string", "path relatif", "tidak", "bps/..., ilostat/..., wdi/...", "lineage ekstraksi (K-015)", "lokasi berkas mentah relatif terhadap data/raw/"),
     "_sha256_raw": ("string", "sha256", "tidak", "64 hex", "src.common.manifest (K-015)", "checksum SHA256 berkas mentah untuk verifikasi integritas"),
     "obs_status": ("string", "—", "ya", "A, R, M, kosong", "OBS_STATUS ILOSTAT (K-013)", "status observasi sumber (A=normal, R=revisi, M=hilang)"),
