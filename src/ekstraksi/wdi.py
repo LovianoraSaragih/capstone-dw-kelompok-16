@@ -146,27 +146,3 @@ def baca_wdi():
         "berkas": ringkasan_berkas,
     }
     return df, meta
-
-
-if __name__ == "__main__":
-    df_obs, meta_obs = baca_wdi()
-    df_meta, meta_files = baca_metadata_wdi()
-
-    assert df_obs["_berkas_raw"].notna().all() and df_obs["_sha256_raw"].notna().all()
-    assert df_meta["_berkas_raw"].notna().all() and df_meta["_sha256_raw"].notna().all()
-
-    print("=== Ringkasan Pembacaan Berkas WDI (4 JSON) ===")
-    for rel_path, info in meta_obs["berkas"].items():
-        if "baris_target" in info:
-            print(
-                f"- {rel_path}: total_json={info['total_json']}, "
-                f"target_seri={info['baris_target']}, non_null={info['baris_non_null']} "
-                f"(null={info['null_dibuang']})"
-            )
-        else:
-            print(
-                f"- {rel_path}: total_json={info['total_json']}, "
-                f"baris_dibaca={info['baris_dibaca']}"
-            )
-    print(f"Total baris observasi WDI (non-null): {len(df_obs)}")
-    print(f"Total baris metadata WDI terbaca: {len(df_meta)}")
