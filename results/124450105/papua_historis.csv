@@ -1,0 +1,47 @@
+sumber,seri_kode,wilayah_kode,nama_wilayah,periode,jenis_periode,rincian,nilai,satuan,_berkas_raw,_sha256_raw
+BPS,var2011,9100,PAPUA BARAT,2018,tahun,Tidak ada,14.95,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9100,PAPUA BARAT,2019,tahun,Tidak ada,11.28,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9100,PAPUA BARAT,2020,tahun,Tidak ada,12.03,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9100,PAPUA BARAT,2021,tahun,Tidak ada,10.84,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9100,PAPUA BARAT,2022,tahun,Tidak ada,8.91,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9100,PAPUA BARAT,2023,tahun,Tidak ada,8.54,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9400,PAPUA,2018,tahun,Tidak ada,18.83,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9400,PAPUA,2019,tahun,Tidak ada,17.8,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9400,PAPUA,2020,tahun,Tidak ada,16.29,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9400,PAPUA,2021,tahun,Tidak ada,13.35,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9400,PAPUA,2022,tahun,Tidak ada,14.11,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9400,PAPUA,2023,tahun,Tidak ada,13.61,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var1254,9100,PAPUA BARAT,2015,tahun,Tidak ada,0.51,Persen,bps/2026-10-20/sdg17_17_1_1_v1254.csv,2e3404a88523bc02021ad77f060390ce824f2794b6520f8d85353c658d459098
+BPS,var1254,9100,PAPUA BARAT,2016,tahun,Tidak ada,0.47,Persen,bps/2026-10-20/sdg17_17_1_1_v1254.csv,2e3404a88523bc02021ad77f060390ce824f2794b6520f8d85353c658d459098
+BPS,var1254,9400,PAPUA,2015,tahun,Tidak ada,0.6,Persen,bps/2026-10-20/sdg17_17_1_1_v1254.csv,2e3404a88523bc02021ad77f060390ce824f2794b6520f8d85353c658d459098
+BPS,var1254,9400,PAPUA,2016,tahun,Tidak ada,0.3,Persen,bps/2026-10-20/sdg17_17_1_1_v1254.csv,2e3404a88523bc02021ad77f060390ce824f2794b6520f8d85353c658d459098
+BPS,var2016,9100,PAPUA BARAT,2019,tahun,Akses pada layanan air minum,32.06,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2020,tahun,Akses pada layanan air minum,25.21,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2021,tahun,Akses pada layanan air minum,28.46,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2022,tahun,Akses pada layanan air minum,30.65,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2023,tahun,Akses pada layanan air minum,30.72,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2019,tahun,Akses pada layanan sanitasi dasar,76.39,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2020,tahun,Akses pada layanan sanitasi dasar,78.71,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2021,tahun,Akses pada layanan sanitasi dasar,77.89,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2022,tahun,Akses pada layanan sanitasi dasar,73.52,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2023,tahun,Akses pada layanan sanitasi dasar,76.3,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2019,tahun,Akses pada fasilitas kesehatan dasar,69.47,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2020,tahun,Akses pada fasilitas kesehatan dasar,73.53,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2021,tahun,Akses pada fasilitas kesehatan dasar,73.71,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2022,tahun,Akses pada fasilitas kesehatan dasar,76.03,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9100,PAPUA BARAT,2023,tahun,Akses pada fasilitas kesehatan dasar,65.38,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2019,tahun,Akses pada layanan air minum,24.64,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2020,tahun,Akses pada layanan air minum,25.37,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2021,tahun,Akses pada layanan air minum,30.07,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2022,tahun,Akses pada layanan air minum,31.61,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2023,tahun,Akses pada layanan air minum,25.86,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2019,tahun,Akses pada layanan sanitasi dasar,38.27,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2020,tahun,Akses pada layanan sanitasi dasar,40.31,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2021,tahun,Akses pada layanan sanitasi dasar,40.81,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2022,tahun,Akses pada layanan sanitasi dasar,40.34,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2023,tahun,Akses pada layanan sanitasi dasar,43.0,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2019,tahun,Akses pada fasilitas kesehatan dasar,35.55,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2020,tahun,Akses pada fasilitas kesehatan dasar,36.44,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2021,tahun,Akses pada fasilitas kesehatan dasar,36.97,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2022,tahun,Akses pada fasilitas kesehatan dasar,40.91,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9400,PAPUA,2023,tahun,Akses pada fasilitas kesehatan dasar,31.78,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396

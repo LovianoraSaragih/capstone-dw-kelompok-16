@@ -4,18 +4,11 @@ Satu dokumen bersama, enam bagian. Angka harus dapat ditarik ulang dari `data/si
 dan `log-keputusan.csv` yang sudah di-*commit*.
 
 ## Ringkasan
-Proyek Sprint 1 mengolah tiga sumber data, yaitu Badan Pusat Statistik (BPS), International Labour Organization (ILOSTAT), dan World Development Indicators (WDI). Data mencakup tiga seri BPS, tiga seri ILOSTAT, dan dua seri WDI.
-
-Hasil integrasi menghasilkan 1.137 baris data Silver dengan 17 kolom. Pemeriksaan panel tiga seri BPS menemukan 292 sel kosong dari 1.092 sel grid, sehingga kelengkapan keseluruhan mencapai 73,26%. Nilai kosong tersebut dipertahankan tanpa imputasi. Hasil validasi menunjukkan 10 dari 10 aturan lolos. Pada Sprint 1, Gold difokuskan pada panel provinsi BPS, sedangkan rekonsiliasi pembanding nasional ditunda ke Sprint 2.
+Kasus, seri yang ditangani, dan satu kalimat temuan utama tentang kualitas datanya.
 
 ## Data dan lineage
-Data mentah berasal dari tiga sumber, yaitu BPS, ILOSTAT, dan WDI. Snapshot yang digunakan adalah 20 Oktober 2026. Berdasarkan pemeriksaan MANIFEST.csv, terdapat 18 berkas yang cocok dengan manifest.
-
-Ekstraksi menghasilkan 800 baris data BPS, 271 baris data ILOSTAT, dan 66 baris data WDI. Pada data BPS, hasil ekstraksi JSON WebAPI diperiksa silang dengan CSV dan tidak ditemukan perbedaan nilai pada 800 baris yang diperiksa (K-003). Ekstraksi ILOSTAT menggunakan tiga CSV observasi dan empat JSON metadata, termasuk DSD dan dataflow (K-014).
-
-Informasi asal data dipertahankan melalui kolom `_berkas_raw` dan `_sha256_raw`. Kolom tersebut membantu menelusuri berkas sumber dan identitas snapshot yang digunakan. Keputusan penggunaan snapshot dan pembentukan kunci data dicatat dalam `log-keputusan.csv`, khususnya K-009 dan K-015.
-
-Pemeriksaan ini merupakan validasi terhadap berkas snapshot yang tersedia. Perbandingan menyeluruh antara snapshot 20 Oktober 2026 dan hasil penarikan API terbaru belum dilaporkan pada Sprint 1.
+Sumber dan format mentah, jumlah berkas, cara `_berkas_raw`/`_sha256_raw` dibentuk, dan hasil tarik
+ulang API (bila dilakukan): apa yang berubah sejak snapshot 17–20 Oktober 2026.
 
 ## Masalah data dan penanganannya
 
@@ -45,35 +38,12 @@ Seluruh angka mengacu pada data Silver, laporan profiling, laporan kelengkapan, 
 
 
 ## Integrasi dan rekonsiliasi
-Pada Sprint 1, integrasi Gold difokuskan pada pembentukan panel provinsi berdasarkan data BPS. Hasilnya adalah 280 baris pada Gold panel dan 800 baris pada Gold panel panjang.
-
-Data ILOSTAT dan WDI dipertahankan sebagai pembanding nasional. Seri pembanding tersebut memiliki cakupan wilayah dan tingkat rincian yang berbeda dari data BPS yang disusun berdasarkan provinsi. Oleh karena itu, perbandingan langsung belum dilakukan sebagai rekonsiliasi final.
-
-Sesuai keputusan K-010, rekonsiliasi pembanding nasional ditunda ke Sprint 2. Keputusan K-013 mempertahankan kode wilayah nasional 9999, nama sumber, dan status observasi ILOSTAT agar informasi sumber tetap dapat ditelusuri.
-
-Analisis kuantitatif mengenai selisih seri utama dengan pembanding nasional, pengaruh perbedaan definisi dan metode, serta perubahan vintage WDI belum diselesaikan pada Sprint 1. Hal tersebut menjadi pekerjaan lanjutan dan tidak dinyatakan sebagai hasil yang sudah teruji.
+Seri utama vs pembanding nasional: selisih, penjelasannya (definisi, metode, vintage, granularitas),
+dan hasil analisis revisi dari arsip WDI.
 
 ## Validasi dan reproduksibilitas
-Validasi dijalankan melalui `python pipeline.py`. Pemeriksaan mencakup rentang nilai persentase, validitas kode wilayah, konsistensi satuan, kelengkapan rincian, keunikan kunci Silver, pemeriksaan penanda imputasi, kelengkapan panel per seri, keberadaan panel Gold, dan duplikasi pada Gold.
-
-Hasil pemeriksaan yang tercatat pada `reports/validasi.md` adalah 10 dari 10 aturan lolos. Tidak ditemukan nilai persentase di luar rentang yang ditetapkan, kode wilayah tidak valid, satuan yang tidak konsisten, rincian kosong, maupun duplikasi kunci Silver. Pemeriksaan juga menghasilkan laporan kelengkapan panel untuk tiga seri BPS.
-
-Hasil kelengkapan panel adalah:
-- var2011: 205 dari 234 sel terisi atau 87,61%.
-- var2016: 525 dari 780 sel terisi atau 67,31%.
-- var1254: 70 dari 78 sel terisi atau 89,74%.
-
-Hasil metrik validasi untuk NIM 124450083 dicatat melalui perintah:
-
-`python -m src.common.hasil 124450083 aturan_validasi=10 aturan_lolos=10`
-
-Hasilnya disimpan pada `results/124450083/metrics.json`.
-
-Pipeline dapat dijalankan kembali dari repository menggunakan perintah `python pipeline.py`, dengan syarat dependensi dan berkas data mentah yang tercatat dalam manifest tersedia. Bukti hasil validasi dapat diperiksa pada `reports/validasi.md`, sedangkan keputusan pengolahan dapat ditelusuri melalui `log-keputusan.csv`.
-
-Pengukuran waktu eksekusi dari kondisi awal yang bersih belum dicatat. Perbandingan performa pandas dengan DuckDB atau Dask juga belum dilakukan, sehingga belum ada kesimpulan mengenai perbedaan waktu maupun penggunaan sumber daya di antara teknologi tersebut.
-
-Keterbatasan lainnya adalah pemeriksaan penanda imputasi belum menjadi verifikasi independen apabila kolom `is_imputed` tidak tersedia. Dalam kondisi tersebut, pemeriksaan mengikuti asumsi bahwa transformasi Silver saat ini tidak melakukan imputasi nilai numerik. Keterbatasan ini perlu diperhatikan ketika pipeline dikembangkan lebih lanjut.
+Skema validasi (aturan, hasil lolos/gagal), waktu `python pipeline.py` dari nol, perbandingan pandas
+vs DuckDB/Dask, dan keterbatasan yang tersisa.
 
 ## Pembagian kerja
 | Anggota | NIM | Komponen | Tugas sampingan | Bagian laporan yang ditulis |
