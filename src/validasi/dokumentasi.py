@@ -12,7 +12,7 @@ DESKRIPSI_KOLOM = {
     "jenis_periode": ("string", "—", "tidak", "tahun", "metadata sumber", "semua seri tahunan"),
     "rincian": ("string", "—", "tidak", "total, air_minum, sanitasi, mobilitas, fasilitas_kesehatan, kode dimensi ILOSTAT", "turvar BPS / DSD ILOSTAT", "lihat tabel pemetaan"),
     "nilai": ("float", "persen", "tidak", "0–100", "datacontent / OBS_VALUE / value", "proporsi"),
-    "satuan": ("string", "—", "tidak", "persen", "metadata + keputusan log", "lihat K-004"),
+    "satuan": ("string", "—", "tidak", "persen", "metadata sumber dan log-keputusan.csv", "var2011 dan var1254 mengikuti keputusan K-002; seri lain mengikuti metadata sumber"),
     "_berkas_raw": ("string", "path relatif", "tidak", "data/raw/...", "sumber baris", "lineage"),
     "_sha256_raw": ("string", "sha256", "tidak", "64 hex", "src.common.manifest", "lineage"),
     "obs_status": ("string", "—", "ya", "A, R, M, kosong", "OBS_STATUS ILOSTAT", "catatan status observasi"),
