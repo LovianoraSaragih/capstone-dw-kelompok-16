@@ -1,0 +1,24 @@
+sumber,seri_kode,wilayah_kode,nama_wilayah,periode,jenis_periode,rincian,nilai,satuan,_berkas_raw,_sha256_raw
+BPS,var2011,9999,INDONESIA,2018,tahun,Tidak ada,12.63,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9999,INDONESIA,2019,tahun,Tidak ada,11.93,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9999,INDONESIA,2020,tahun,Tidak ada,11.99,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9999,INDONESIA,2021,tahun,Tidak ada,11.61,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9999,INDONESIA,2022,tahun,Tidak ada,10.16,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var2011,9999,INDONESIA,2023,tahun,Tidak ada,9.44,Persen,bps/2026-10-20/sdg10_10_2_1_v2011.csv,d8f8b2b51719bed36f059f64b4ef0c1a654b0a9bf2f17361a12890889ef221b5
+BPS,var1254,9999,INDONESIA,2015,tahun,Tidak ada,13.08,Persen,bps/2026-10-20/sdg17_17_1_1_v1254.csv,2e3404a88523bc02021ad77f060390ce824f2794b6520f8d85353c658d459098
+BPS,var1254,9999,INDONESIA,2016,tahun,Tidak ada,14.4,Persen,bps/2026-10-20/sdg17_17_1_1_v1254.csv,2e3404a88523bc02021ad77f060390ce824f2794b6520f8d85353c658d459098
+BPS,var2016,9999,INDONESIA,2019,tahun,Akses pada layanan air minum,42.84,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2020,tahun,Akses pada layanan air minum,42.31,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2021,tahun,Akses pada layanan air minum,43.81,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2022,tahun,Akses pada layanan air minum,44.94,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2023,tahun,Akses pada layanan air minum,44.95,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2019,tahun,Akses pada layanan sanitasi dasar,77.39,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2020,tahun,Akses pada layanan sanitasi dasar,79.53,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2021,tahun,Akses pada layanan sanitasi dasar,80.29,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2022,tahun,Akses pada layanan sanitasi dasar,80.92,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2023,tahun,Akses pada layanan sanitasi dasar,82.36,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2019,tahun,Akses pada fasilitas kesehatan dasar,76.07,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2020,tahun,Akses pada fasilitas kesehatan dasar,78.3,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2021,tahun,Akses pada fasilitas kesehatan dasar,79.59,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2022,tahun,Akses pada fasilitas kesehatan dasar,79.33,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
+BPS,var2016,9999,INDONESIA,2023,tahun,Akses pada fasilitas kesehatan dasar,80.15,Persen,bps/2026-10-20/sdg1_1_4_1_v2016.csv,003e033fe31f27b15a41ac1c1e59a5677806649724b039d413f8cac3054b5396
