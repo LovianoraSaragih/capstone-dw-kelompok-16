@@ -1,6 +1,10 @@
 {
   "metrik": {
-    "berkas_mentah": 16
+    "berkas_mentah": 18,
+    "berkas_wdi": 4,
+    "baris_wdi": 66,
+    "anomali_terklasifikasi": 25,
+    "kolom_terdokumentasi": 17
   },
   "seed": 0,
   "data_hash": "7dfa0610bf5f1b0a83d8a7695addd915969ade3850affc194eb5c3c7e7c1a969",
