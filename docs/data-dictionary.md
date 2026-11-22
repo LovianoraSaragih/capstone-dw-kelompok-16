@@ -1,29 +1,67 @@
 # Data dictionary — Kelompok 16, kasus 16
 
 Dihasilkan oleh `src/validasi/dokumentasi.py` dari isi `data/silver/silver.parquet` dan
-`data/gold/*.parquet` pada setiap `python pipeline.py`.
+`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold akan dilengkapi pada Sprint 2–3.
 
-## data/silver/silver.parquet
+## Pencocokan Kamus dengan Tabel Silver Aktual
 
-| Kolom | Tipe | Satuan/format | Boleh kosong | Rentang atau nilai sah | Asal | Keterangan |
-|---|---|---|---|---|---|---|
-| sumber | string | — | tidak | bps, ilostat, wdi | folder data/raw | nama sumber |
-| seri_kode | string | — | tidak | var2011, var2016, var1254, SDG_*, SI.* | metadata sumber | kode seri |
-| wilayah_kode | int | kode BPS x 100 | tidak | 9999 atau 1100–9700 | vervar BPS / nasional | 9999 = Indonesia |
-| nama_wilayah | string | — | tidak | label sumber | vervar BPS / country WDI | mengikuti kapitalisasi sumber |
-| periode | string | tahun | tidak | YYYY | tahun BPS / TIME_PERIOD / date | format baku |
-| jenis_periode | string | — | tidak | tahun | metadata sumber | semua seri tahunan |
-| rincian | string | — | tidak | total, air_minum, sanitasi, mobilitas, fasilitas_kesehatan, kode dimensi ILOSTAT | turvar BPS / DSD ILOSTAT | lihat tabel pemetaan |
-| nilai | float | persen | tidak | 0–100 | datacontent / OBS_VALUE / value | proporsi |
-| satuan | string | — | tidak | persen | metadata + keputusan log | lihat K-004 |
-| _berkas_raw | string | path relatif | tidak | data/raw/... | sumber baris | lineage |
-| _sha256_raw | string | sha256 | tidak | 64 hex | src.common.manifest | lineage |
-| obs_status | string | — | ya | A, R, M, kosong | OBS_STATUS ILOSTAT | catatan status observasi |
-| note_indicator | string | — | ya | teks | note BPS / NOTE_INDICATOR | catatan sumber |
-| outlier_z | bool | — | tidak | True/False | src/silver/profil.py | z-score > 3; tidak dihapus |
-| outlier_iqr | bool | — | tidak | True/False | src/silver/profil.py | di luar 1.5 IQR; tidak dihapus |
-| patahan_definisi | bool | — | tidak | True/False | src/silver/pembersihan.py | hanya jika catatan metadata menyebut patahan |
-| patahan_kandidat | bool | — | tidak | True/False | src/silver/pembersihan.py | heuristik median perubahan >= 5 poin |
+- **Berkas tabel yang diperiksa:** `data/silver/silver.parquet` (1,137 baris, 17 kolom)
+- **Jumlah kolom terdokumentasi di kamus:** 17 dari 17 kolom (100% cocok)
+- **Kolom aktual yang belum ada di kamus:** 0 (tidak ada)
+- **Kolom kamus yang tidak muncul di tabel aktual:** 0 (tidak ada)
+
+## Kamus Kolom `data/silver/silver.parquet`
+
+| Kolom | Tipe kamus | Dtype aktual | Satuan/format | Boleh kosong | Rentang atau nilai sah | Asal | Arti / keterangan |
+|---|---|---|---|---|---|---|---|
+| `sumber` | string | `str` | — | tidak | bps, ilostat, wdi | folder data/raw (K-016) | nama sumber data |
+| `seri_kode` | string | `str` | — | tidak | var2011, var2016, var1254, SDG_*, SI.* | metadata sumber | kode indikator/seri |
+| `wilayah_kode` | int | `int64` | kode BPS x 100 | tidak | 9999 atau 1100–9700 | vervar BPS / nasional (K-001, K-013) | 9999 = Indonesia; provinsi = kode BPS x 100 |
+| `nama_wilayah` | string | `str` | — | tidak | label sumber | vervar BPS / country WDI | nama wilayah mengikuti kapitalisasi sumber |
+| `periode` | string | `str` | tahun | tidak | YYYY | tahun BPS / TIME_PERIOD / date | tahun observasi format baku 4 digit |
+| `jenis_periode` | string | `str` | — | tidak | tahun | keputusan log (K-012) | granulasi waktu observasi (semua seri tahunan) |
+| `rincian` | string | `str` | — | tidak | total, air_minum, sanitasi, mobilitas, fasilitas_kesehatan, kode dimensi ILOSTAT | turvar BPS / DSD ILOSTAT (K-004, K-005) | dimensi disagregasi indikator; lihat tabel pemetaan |
+| `nilai` | float | `float64` | persen | tidak | 0–100 | datacontent / OBS_VALUE / value | nilai numerik proporsi indikator |
+| `satuan` | string | `str` | — | tidak | persen | metadata + keputusan log (K-002, K-021, K-022) | unit pengukuran indikator |
+| `_berkas_raw` | string | `str` | path relatif | tidak | bps/..., ilostat/..., wdi/... | lineage ekstraksi (K-015) | lokasi berkas mentah relatif terhadap data/raw/ |
+| `_sha256_raw` | string | `str` | sha256 | tidak | 64 hex | src.common.manifest (K-015) | checksum SHA256 berkas mentah untuk verifikasi integritas |
+| `obs_status` | string | `str` | — | ya | A, R, M, kosong | OBS_STATUS ILOSTAT (K-013) | status observasi sumber (A=normal, R=revisi, M=hilang) |
+| `note_indicator` | string | `str` | — | ya | teks | note BPS / NOTE_INDICATOR | catatan atau keterangan tambahan dari sumber |
+| `outlier_z` | bool | `bool` | — | tidak | True/False | src/silver/profil.py (K-007) | penanda pencilan |z-score| > 3; ditandai tanpa dihapus |
+| `outlier_iqr` | bool | `bool` | — | tidak | True/False | src/silver/profil.py (K-007) | penanda pencilan di luar 1.5 x IQR; ditandai tanpa dihapus |
+| `patahan_definisi` | bool | `bool` | — | tidak | True/False | src/silver/pembersihan.py (K-008) | penanda patahan seri jika catatan metadata menyebut perubahan definisi |
+| `patahan_kandidat` | bool | `bool` | — | tidak | True/False | src/silver/pembersihan.py (K-008) | kandidat patahan heuristik (median perubahan lintas provinsi >= 5 poin) |
+
+## Contoh Penelusuran Satu Baris Silver ke Berkas Mentah (Lineage)
+
+Contoh baris diambil langsung dari `data/silver/silver.parquet` (baris indeks 0):
+
+```json
+{
+  "sumber": "bps",
+  "seri_kode": "var1254",
+  "wilayah_kode": 1100,
+  "nama_wilayah": "ACEH",
+  "periode": "2015",
+  "jenis_periode": "tahun",
+  "rincian": "total",
+  "nilai": 1.54,
+  "satuan": "persen",
+  "_berkas_raw": "bps/2026-10-20/json/sdg17_17_1_1_v1254.json",
+  "_sha256_raw": "0bdc1b62f4a7ec0d96175254a4a4e0df7421b3ee89e0d08fd29a5b878d67c531",
+  "obs_status": "",
+  "note_indicator": "Sumber : BPS",
+  "outlier_z": false,
+  "outlier_iqr": false,
+  "patahan_definisi": false,
+  "patahan_kandidat": false
+}
+```
+
+**Langkah penelusuran ke sumber mentah:**
+1. **Lokasi berkas mentah:** Kolom `_berkas_raw` menunjuk ke `data/raw/bps/2026-10-20/json/sdg17_17_1_1_v1254.json`.
+2. **Verifikasi integritas SHA256:** Nilai `_sha256_raw` (`0bdc1b62f4a7ec0d96175254a4a4e0df7421b3ee89e0d08fd29a5b878d67c531`) cocok 100% dengan checksum SHA256 berkas aktual pada `data/raw/bps/2026-10-20/json/sdg17_17_1_1_v1254.json` dan entri `bps/2026-10-20/json/sdg17_17_1_1_v1254.json` di `data/raw/MANIFEST.csv`.
+3. **Pencocokan nilai di berkas mentah:** Di dalam berkas JSON WebAPI BPS (`bps/2026-10-20/json/sdg17_17_1_1_v1254.json`), kode wilayah `vervar = 11` (`ACEH` -> dipetakan menjadi `wilayah_kode = 1100` sesuai K-001), variabel `var = 1254`, turunan `turvar = 0` (`total`), dan periode `2015` membentuk kunci `datacontent` `"11125401150"` dengan nilai mentah `1.54` (`satuan = "persen"` sesuai K-002 dan K-022).
 
 ## Seri di Silver
 
@@ -49,7 +87,7 @@ Dihasilkan oleh `src/validasi/dokumentasi.py` dari isi `data/silver/silver.parqu
 | fasilitas_kesehatan | Akses pada fasilitas kesehatan dasar (1686) | var2016 |
 
 Rincian ILOSTAT memakai kode dimensi asli dari DSD, mis. `SEX=SEX_T;AGE=AGE_YTHADULT_YGE15`,
-karena snapshot DSD tidak memuat codelist/label kode.
+karena snapshot DSD tidak memuat codelist/label kode (keputusan K-004).
 
 ## data/gold/
 
@@ -58,4 +96,4 @@ karena snapshot DSD tidak memuat codelist/label kode.
 | data/gold/panel_provinsi.parquet | 280 | 8 |
 | data/gold/panel_provinsi_long.parquet | 800 | 11 |
 
-Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional menyusul di Sprint 2.
+Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional dan kamus kolom Gold menyusul di Sprint 2–3.
