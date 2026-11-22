@@ -195,3 +195,25 @@ def cek_csv(df_json):
             "contoh_beda": beda[:5],
         }
     return hasil
+
+def baca_bps_csv():
+    """Baca 3 berkas CSV BPS dan tempelkan kolom lineage _berkas_raw serta _sha256_raw."""
+    frames = []
+    berkas_meta = {}
+    for stem, konfig in SERI.items():
+        rel = f"{SUMBER}/{SNAPSHOT}/{stem}.csv"
+        sha = sha256_raw(rel)
+        with open(RAW / rel, encoding="utf-8-sig", newline="") as f:
+            rows = list(csv.DictReader(f))
+        for r in rows:
+            r["seri_kode"] = konfig["seri_kode"]
+            r["_berkas_raw"] = rel
+            r["_sha256_raw"] = sha
+        df = pd.DataFrame(rows)
+        frames.append(df)
+        berkas_meta[rel] = {
+            "seri_kode": konfig["seri_kode"],
+            "baris_mentah": int(len(df)),
+        }
+    gabungan = pd.concat(frames, ignore_index=True)
+    return gabungan, {"baris_mentah": int(len(gabungan)), "berkas": berkas_meta}
