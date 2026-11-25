@@ -10,7 +10,7 @@
 | silver_kunci_unik | LOLOS | 0 baris duplikat pada kunci Silver |
 | imputasi_memiliki_penanda | LOLOS | Tidak ada imputasi nilai dalam transformasi Silver; nilai berasal dari observasi sumber. Imputasi di masa depan wajib memakai is_imputed. |
 | kelengkapan_panel_per_seri | LOLOS | 3 seri dilaporkan |
-| gold_panel_terbentuk | LOLOS | 280 baris |
+| gold_panel_terbentuk | LOLOS | 304 baris |
 | gold_kunci_unik | LOLOS | 0 duplikat |
 
 ## Kelengkapan panel per seri
