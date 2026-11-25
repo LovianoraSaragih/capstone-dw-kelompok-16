@@ -55,7 +55,7 @@ karena snapshot DSD tidak memuat codelist/label kode.
 
 | Tabel | Baris | Kolom |
 |---|---:|---:|
-| data/gold/panel_provinsi.parquet | 280 | 8 |
-| data/gold/panel_provinsi_long.parquet | 800 | 11 |
+| data/gold/panel_provinsi.parquet | 304 | 28 |
+| data/gold/panel_provinsi_long.parquet | 731 | 15 |
 
 Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional menyusul di Sprint 2.
