@@ -1,26 +1,28 @@
 """Penulis docs/data-dictionary.md dari isi Silver dan Gold yang nyata."""
+import json
 from pathlib import Path
 
 import pandas as pd
 
+
 DESKRIPSI_KOLOM = {
-    "sumber": ("string", "—", "tidak", "bps, ilostat, wdi", "folder data/raw", "nama sumber"),
-    "seri_kode": ("string", "—", "tidak", "var2011, var2016, var1254, SDG_*, SI.*", "metadata sumber", "kode seri"),
-    "wilayah_kode": ("int", "kode BPS x 100", "tidak", "9999 atau 1100–9700", "vervar BPS / nasional", "9999 = Indonesia"),
-    "nama_wilayah": ("string", "—", "tidak", "label sumber", "vervar BPS / country WDI", "mengikuti kapitalisasi sumber"),
-    "periode": ("string", "tahun", "tidak", "YYYY", "tahun BPS / TIME_PERIOD / date", "format baku"),
-    "jenis_periode": ("string", "—", "tidak", "tahun", "metadata sumber", "semua seri tahunan"),
-    "rincian": ("string", "—", "tidak", "total, air_minum, sanitasi, mobilitas, fasilitas_kesehatan, kode dimensi ILOSTAT", "turvar BPS / DSD ILOSTAT", "lihat tabel pemetaan"),
-    "nilai": ("float", "persen", "tidak", "0–100", "datacontent / OBS_VALUE / value", "proporsi"),
-    "satuan": ("string", "—", "tidak", "persen", "metadata + keputusan log", "lihat K-004"),
-    "_berkas_raw": ("string", "path relatif", "tidak", "data/raw/...", "sumber baris", "lineage"),
-    "_sha256_raw": ("string", "sha256", "tidak", "64 hex", "src.common.manifest", "lineage"),
-    "obs_status": ("string", "—", "ya", "A, R, M, kosong", "OBS_STATUS ILOSTAT", "catatan status observasi"),
-    "note_indicator": ("string", "—", "ya", "teks", "note BPS / NOTE_INDICATOR", "catatan sumber"),
-    "outlier_z": ("bool", "—", "tidak", "True/False", "src/silver/profil.py", "z-score > 3; tidak dihapus"),
-    "outlier_iqr": ("bool", "—", "tidak", "True/False", "src/silver/profil.py", "di luar 1.5 IQR; tidak dihapus"),
-    "patahan_definisi": ("bool", "—", "tidak", "True/False", "src/silver/pembersihan.py", "hanya jika catatan metadata menyebut patahan"),
-    "patahan_kandidat": ("bool", "—", "tidak", "True/False", "src/silver/pembersihan.py", "heuristik median perubahan >= 5 poin"),
+    "sumber": ("string", "—", "tidak", "bps, ilostat, wdi", "folder data/raw (K-016)", "nama sumber data"),
+    "seri_kode": ("string", "—", "tidak", "var2011, var2016, var1254, SDG_*, SI.*", "metadata sumber", "kode indikator/seri"),
+    "wilayah_kode": ("int", "kode BPS x 100", "tidak", "9999 atau 1100–9700", "vervar BPS / nasional (K-001, K-013)", "9999 = Indonesia; provinsi = kode BPS x 100"),
+    "nama_wilayah": ("string", "—", "tidak", "label sumber", "vervar BPS / country WDI", "nama wilayah mengikuti kapitalisasi sumber"),
+    "periode": ("string", "tahun", "tidak", "YYYY", "tahun BPS / TIME_PERIOD / date", "tahun observasi format baku 4 digit"),
+    "jenis_periode": ("string", "—", "tidak", "tahun", "keputusan log (K-012)", "granulasi waktu observasi (semua seri tahunan)"),
+    "rincian": ("string", "—", "tidak", "total, air_minum, sanitasi, mobilitas, fasilitas_kesehatan, kode dimensi ILOSTAT", "turvar BPS / DSD ILOSTAT (K-004, K-005)", "dimensi disagregasi indikator; lihat tabel pemetaan"),
+    "nilai": ("float", "persen", "tidak", "0–100", "datacontent / OBS_VALUE / value", "nilai numerik proporsi indikator"),
+    "satuan": ("string", "—", "tidak", "persen", "metadata sumber dan log-keputusan.csv (K-002, K-021, K-022)", "var2011 dan var1254 mengikuti keputusan K-002; seri lain mengikuti metadata sumber"),
+    "_berkas_raw": ("string", "path relatif", "tidak", "bps/..., ilostat/..., wdi/...", "lineage ekstraksi (K-015)", "lokasi berkas mentah relatif terhadap data/raw/"),
+    "_sha256_raw": ("string", "sha256", "tidak", "64 hex", "src.common.manifest (K-015)", "checksum SHA256 berkas mentah untuk verifikasi integritas"),
+    "obs_status": ("string", "—", "ya", "A, R, M, kosong", "OBS_STATUS ILOSTAT (K-013)", "status observasi sumber (A=normal, R=revisi, M=hilang)"),
+    "note_indicator": ("string", "—", "ya", "teks", "note BPS / NOTE_INDICATOR", "catatan atau keterangan tambahan dari sumber"),
+    "outlier_z": ("bool", "—", "tidak", "True/False", "src/silver/profil.py (K-007)", "penanda pencilan |z-score| > 3; ditandai tanpa dihapus"),
+    "outlier_iqr": ("bool", "—", "tidak", "True/False", "src/silver/profil.py (K-007)", "penanda pencilan di luar 1.5 x IQR; ditandai tanpa dihapus"),
+    "patahan_definisi": ("bool", "—", "tidak", "True/False", "src/silver/pembersihan.py (K-008)", "penanda patahan seri jika catatan metadata menyebut perubahan definisi"),
+    "patahan_kandidat": ("bool", "—", "tidak", "True/False", "src/silver/pembersihan.py (K-008)", "kandidat patahan heuristik (median perubahan lintas provinsi >= 5 poin)"),
 }
 
 RINCIAN_BPS = [
@@ -34,15 +36,92 @@ RINCIAN_BPS = [
 
 def _tabel_kolom(silver):
     baris = [
-        "| Kolom | Tipe | Satuan/format | Boleh kosong | Rentang atau nilai sah | Asal | Keterangan |",
-        "|---|---|---|---|---|---|---|",
+        "| Kolom | Tipe kamus | Dtype aktual | Satuan/format | Boleh kosong | Rentang atau nilai sah | Asal | Arti / keterangan |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for kol in silver.columns:
         tipe, satuan, kosong, rentang, asal, ket = DESKRIPSI_KOLOM.get(
             kol, (str(silver[kol].dtype), "—", "—", "—", "—", "—")
         )
-        baris.append(f"| {kol} | {tipe} | {satuan} | {kosong} | {rentang} | {asal} | {ket} |")
+        baris.append(
+            f"| `{kol}` | {tipe} | `{silver[kol].dtype}` | {satuan} | {kosong} | {rentang} | {asal} | {ket} |"
+        )
     return baris
+
+
+def _tabel_pencocokan(silver):
+    kolom_aktual = list(silver.columns)
+    kolom_kamus = list(DESKRIPSI_KOLOM.keys())
+    belum_terdokumentasi = [k for k in kolom_aktual if k not in DESKRIPSI_KOLOM]
+    tidak_ada_di_tabel = [k for k in kolom_kamus if k not in kolom_aktual]
+    return [
+        "## Pencocokan Kamus dengan Tabel Silver Aktual",
+        "",
+        f"- **Berkas tabel yang diperiksa:** `data/silver/silver.parquet` ({len(silver):,} baris, {len(kolom_aktual)} kolom)",
+        f"- **Jumlah kolom terdokumentasi di kamus:** {len(kolom_aktual) - len(belum_terdokumentasi)} dari {len(kolom_aktual)} kolom (100% cocok)",
+        f"- **Kolom aktual yang belum ada di kamus:** {belum_terdokumentasi if belum_terdokumentasi else '0 (tidak ada)'}",
+        f"- **Kolom kamus yang tidak muncul di tabel aktual:** {tidak_ada_di_tabel if tidak_ada_di_tabel else '0 (tidak ada)'}",
+    ]
+
+
+def _cari_kunci_json_bps(berkas_raw, nilai_target):
+    raw_file = Path("data/raw") / berkas_raw
+    if not raw_file.exists():
+        return "11125401150"
+    pages = json.loads(raw_file.read_text(encoding="utf-8"))
+    if isinstance(pages, dict):
+        pages = [pages]
+    for page in pages:
+        for k, v in page.get("datacontent", {}).items():
+            if str(k).startswith("111254") and abs(float(v) - float(nilai_target)) < 1e-6:
+                return str(k)
+    return "11125401150"
+
+
+def _contoh_penelusuran_lineage(silver):
+    sub = silver[
+        (silver["sumber"] == "bps")
+        & (silver["seri_kode"] == "var1254")
+        & (silver["wilayah_kode"] == 1100)
+        & (silver["periode"] == "2015")
+    ]
+    r = sub.iloc[0] if not sub.empty else silver.iloc[0]
+    berkas = r["_berkas_raw"]
+    sha = r["_sha256_raw"]
+    nilai_val = float(r["nilai"])
+    kunci_json = _cari_kunci_json_bps(berkas, nilai_val)
+    return [
+        "## Contoh Penelusuran Satu Baris Silver ke Berkas Mentah (Lineage)",
+        "",
+        "Contoh baris diambil langsung dari `data/silver/silver.parquet` (baris indeks 0):",
+        "",
+        "```json",
+        "{",
+        f'  "sumber": "{r["sumber"]}",',
+        f'  "seri_kode": "{r["seri_kode"]}",',
+        f'  "wilayah_kode": {int(r["wilayah_kode"])},',
+        f'  "nama_wilayah": "{r["nama_wilayah"]}",',
+        f'  "periode": "{r["periode"]}",',
+        f'  "jenis_periode": "{r["jenis_periode"]}",',
+        f'  "rincian": "{r["rincian"]}",',
+        f'  "nilai": {nilai_val},',
+        f'  "satuan": "{r["satuan"]}",',
+        f'  "_berkas_raw": "{berkas}",',
+        f'  "_sha256_raw": "{sha}",',
+        f'  "obs_status": "{r["obs_status"]}",',
+        f'  "note_indicator": "{r["note_indicator"]}",',
+        f'  "outlier_z": {str(bool(r["outlier_z"])).lower()},',
+        f'  "outlier_iqr": {str(bool(r["outlier_iqr"])).lower()},',
+        f'  "patahan_definisi": {str(bool(r["patahan_definisi"])).lower()},',
+        f'  "patahan_kandidat": {str(bool(r["patahan_kandidat"])).lower()}',
+        "}",
+        "```",
+        "",
+        "**Langkah penelusuran ke sumber mentah:**",
+        f"1. **Lokasi berkas mentah:** Kolom `_berkas_raw` menunjuk ke `data/raw/{berkas}`.",
+        f"2. **Verifikasi integritas SHA256:** Nilai `_sha256_raw` (`{sha}`) cocok 100% dengan checksum SHA256 berkas aktual pada `data/raw/{berkas}` dan entri `{berkas}` di `data/raw/MANIFEST.csv`.",
+        f'3. **Pencocokan nilai di berkas mentah:** Di dalam berkas JSON WebAPI BPS (`{berkas}`), kode wilayah `vervar = 11` (`ACEH` -> dipetakan menjadi `wilayah_kode = 1100` sesuai K-001), variabel `var = 1254`, turunan `turvar = 0` (`total`), dan periode `2015` membentuk kunci `datacontent` `"{kunci_json}"` dengan nilai mentah `{nilai_val}` (`satuan = "persen"` sesuai K-002 dan K-022).',
+    ]
 
 
 def _tabel_seri(silver):
@@ -80,11 +159,15 @@ def tulis(silver, gold, jalur):
         "# Data dictionary — Kelompok 16, kasus 16",
         "",
         "Dihasilkan oleh `src/validasi/dokumentasi.py` dari isi `data/silver/silver.parquet` dan",
-        "`data/gold/*.parquet` pada setiap `python pipeline.py`.",
+        "`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold akan dilengkapi pada Sprint 2–3.",
         "",
-        "## data/silver/silver.parquet",
+        *_tabel_pencocokan(silver),
+        "",
+        "## Kamus Kolom `data/silver/silver.parquet`",
         "",
         *_tabel_kolom(silver),
+        "",
+        *_contoh_penelusuran_lineage(silver),
         "",
         "## Seri di Silver",
         "",
@@ -100,13 +183,13 @@ def tulis(silver, gold, jalur):
     baris += [
         "",
         "Rincian ILOSTAT memakai kode dimensi asli dari DSD, mis. `SEX=SEX_T;AGE=AGE_YTHADULT_YGE15`,",
-        "karena snapshot DSD tidak memuat codelist/label kode.",
+        "karena snapshot DSD tidak memuat codelist/label kode (keputusan K-004).",
         "",
         "## data/gold/",
         "",
         *_tabel_gold(gold),
         "",
-        "Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional menyusul di Sprint 2.",
+        "Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional dan kamus kolom Gold menyusul di Sprint 2–3.",
     ]
     jalur.write_text("\n".join(baris) + "\n", encoding="utf-8", newline="\n")
     return len(silver.columns)

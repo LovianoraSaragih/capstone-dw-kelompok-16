@@ -4,29 +4,11 @@ Satu dokumen bersama, enam bagian. Angka harus dapat ditarik ulang dari `data/si
 dan `log-keputusan.csv` yang sudah di-*commit*.
 
 ## Ringkasan
-Lapisan silver mengambil tiga sumber mentah yang berbeda bentuk (JSON BPS WebAPI, SDMX-CSV ILOSTAT, JSON WDI) dan mengubahnya menjadi **satu tabel observasi yang panjang dan bertipe**, `data/silver/silver.parquet`, dengan kontrak 13 kolom yang tetap. Lapisan ini tidak mengimputasi, mengagregasi, atau mengubah bentuk nilai. Setelah itu tabel diprofilkan (statistik deskriptif, outlier, ketersediaan), diperiksa kelengkapan dan duplikasinya, ditandai kemungkinan patahan seri, lalu diringkas menjadi `metrics.json`.
-
-Lapisan ini terdiri dari empat tahap:
-
-1. **Harmonisasi** (`transformasi.py`): gabungkan keluaran tiga pembaca, seragamkan tipe dan string, tegakkan kolom wajib, urutkan, tulis Parquet.
-2. **Profiling** (`profil.py`): statistik per seri, matriks ketersediaan, penanda outlier z-score dan IQR, grafik garis dan boxplot.
-3. **Pembersihan dan pemeriksaan** (`pembersihan.py`): grid kelengkapan BPS, pemeriksaan duplikat pada kunci alami, penanda patahan yang terdokumentasi dan kandidat patahan heuristik.
-4. **Pengukuran** (`metrik.py`): membaca Parquet dan JSON metrik sementara, lalu menulis `results/<nim>/metrics.json`.
+Kasus, seri yang ditangani, dan satu kalimat temuan utama tentang kualitas datanya.
 
 ## Data dan lineage
-
-Alur data yang dilakukan:
-
-| Langkah | Masukan | Keluaran |
-| --- | --- | --- |
-| Ekstraksi (`baca_bps`, `baca_ilostat`, `baca_wdi`) | `data/raw/<sumber>/<snapshot>/...` | tiga DataFrame dengan kolom umum plus kolom `_` khusus sumber |
-| `ke_silver` | tiga DataFrame tersebut | satu DataFrame, 13 kolom, terurut |
-| `tulis_silver` | DataFrame | `data/silver/silver.parquet` |
-| `profil.tulis_laporan` | DataFrame silver dengan penanda outlier | `profil_deskriptif.csv`, `matriks_ketersediaan.csv`, `profil_anomali.csv`, `gambar/deret_*.png`, `gambar/boxplot_*.png` |
-| `pembersihan.tulis_laporan` | DataFrame silver, grid, hasil cek duplikat | `grid_bps.csv`, `kelengkapan.csv`, `pembersihan.md` |
-| `metrik.main` | `silver.parquet`, `data/interim/*_metrik.json` | `results/<nim>/metrics.json` (nim bawaan 124450115) |
-
-Kolom penanda `outlier_z`, `outlier_iqr`, `patahan_definisi` dan `patahan_kandidat` dihitung pada salinan DataFrame. Pada kode yang ditampilkan, kolom-kolom itu **tidak** ikut tersimpan di `silver.parquet`, yang hanya memuat 13 kolom kontrak. Hasilnya tetap ada di `profil_anomali.csv` dan sebagai angka di JSON sementara.
+Sumber dan format mentah, jumlah berkas, cara `_berkas_raw`/`_sha256_raw` dibentuk, dan hasil tarik
+ulang API (bila dilakukan): apa yang berubah sejak snapshot 17–20 Oktober 2026.
 
 ## Masalah data dan penanganannya
 
@@ -55,15 +37,13 @@ Catatan interpretasi:
 Seluruh angka mengacu pada data Silver, laporan profiling, laporan kelengkapan, hasil validasi, dan ID keputusan dalam log Sprint 1.
 
 
-## Artefak keluaran
+## Integrasi dan rekonsiliasi
+Seri utama vs pembanding nasional: selisih, penjelasannya (definisi, metode, vintage, granularitas),
+dan hasil analisis revisi dari arsip WDI.
 
-| Artefak | Penghasil |
-| --- | --- |
-| `data/silver/silver.parquet` | `tulis_silver` |
-| `reports/.../profil_deskriptif.csv`, `matriks_ketersediaan.csv`, `profil_anomali.csv` | `profil.tulis_laporan` |
-| `reports/.../gambar/deret_<sumber>_<seri>.png`, `boxplot_<sumber>_<seri>.png` | `profil.grafik` |
-| `reports/.../grid_bps.csv`, `kelengkapan.csv`, `pembersihan.md` | `pembersihan.tulis_laporan` |
-| `results/<nim>/metrics.json` | `metrik.main` |
+## Validasi dan reproduksibilitas
+Skema validasi (aturan, hasil lolos/gagal), waktu `python pipeline.py` dari nol, perbandingan pandas
+vs DuckDB/Dask, dan keterbatasan yang tersisa.
 
 ## Pembagian kerja
 | Anggota | NIM | Komponen | Tugas sampingan | Bagian laporan yang ditulis |
