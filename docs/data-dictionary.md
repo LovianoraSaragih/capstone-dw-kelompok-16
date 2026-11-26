@@ -93,7 +93,9 @@ karena snapshot DSD tidak memuat codelist/label kode (keputusan K-004).
 
 | Tabel | Baris | Kolom |
 |---|---:|---:|
-| data/gold/panel_provinsi.parquet | 304 | 28 |
-| data/gold/panel_provinsi_long.parquet | 731 | 15 |
+| data/gold/panel_provinsi.parquet | 304 | 10 |
+| data/gold/panel_provinsi_long.parquet | 731 | 13 |
+| data/gold/kelengkapan_panel.parquet | 28 | 10 |
+| data/gold/papua_historis.parquet | 46 | 19 |
 
 Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional dan kamus kolom Gold menyusul di Sprint 2–3.

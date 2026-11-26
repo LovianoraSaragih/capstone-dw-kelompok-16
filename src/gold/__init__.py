@@ -1,4 +1,5 @@
-"""Tahap 4–6 — Reshape, integrasi, dan penyimpanan ke Gold."""
+
+"""Tahap Gold: pembentukan panel provinsi x periode x indikator."""
 
 from pathlib import Path
 
@@ -93,8 +94,8 @@ def bentuk_panel(terpilih):
     ).reset_index(drop=True)
 
 
-def jalankan(silver):
-    """Terima Silver, tulis tabel Gold, kembalikan tabel yang dihasilkan."""
+def jalankan_sprint1(silver):
+    """Menjalankan implementasi Gold Sprint 1."""
     terpilih = pilih_observasi(silver)
 
     panel = bentuk_panel(terpilih)
@@ -140,3 +141,12 @@ def jalankan(silver):
         "panel_provinsi": panel,
         "panel_provinsi_long": panjang,
     }
+
+
+# Implementasi Gold Sprint 2
+from . import panel
+
+
+def jalankan(silver):
+    """Menjalankan pengolahan Gold Sprint 2."""
+    return panel.jalankan(silver)
