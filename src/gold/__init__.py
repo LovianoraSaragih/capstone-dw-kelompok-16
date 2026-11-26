@@ -144,9 +144,11 @@ def jalankan_sprint1(silver):
 
 
 # Implementasi Gold Sprint 2
-from . import panel
+from . import nasional, panel
 
 
 def jalankan(silver):
-    """Menjalankan pengolahan Gold Sprint 2."""
-    return panel.jalankan(silver)
+    """Menjalankan pengolahan Gold dan tabel nasional."""
+    hasil = panel.jalankan(silver)
+    hasil["tabel_nasional"] = nasional.jalankan(silver)
+    return hasil
