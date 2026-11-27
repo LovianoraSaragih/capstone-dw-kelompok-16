@@ -144,11 +144,14 @@ def jalankan_sprint1(silver):
 
 
 # Implementasi Gold Sprint 2
-from . import nasional, panel
+from . import gold as sql
+from . import nasional, panel, rekonsiliasi
 
 
 def jalankan(silver):
-    """Menjalankan pengolahan Gold dan tabel nasional."""
+    """Menjalankan pengolahan Gold, tabel nasional, rekonsiliasi, dan SQL."""
     hasil = panel.jalankan(silver)
     hasil["tabel_nasional"] = nasional.jalankan(silver)
+    hasil["rekonsiliasi_nasional"] = rekonsiliasi.jalankan(hasil["tabel_nasional"])
+    hasil["sql"] = sql.jalankan(silver)
     return hasil

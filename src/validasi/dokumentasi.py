@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.gold.turunan import DESKRIPSI_TURUNAN
+
 
 DESKRIPSI_KOLOM = {
     "sumber": ("string", "—", "tidak", "bps, ilostat, wdi", "folder data/raw (K-016)", "nama sumber data"),
@@ -142,13 +144,70 @@ def _tabel_seri(silver):
     return baris
 
 
+def _tabel_turunan(gold):
+    panel = gold.get("panel_provinsi")
+    if panel is None or panel.empty:
+        return ["_Panel Gold belum tersedia._"]
+    baris = [
+        "| Kolom | Jenis | Rumus | Input | Alasan | Terisi |",
+        "|---|---|---|---|---|---:|",
+    ]
+    for d in DESKRIPSI_TURUNAN:
+        kol = d["kolom"]
+        if kol in panel.columns:
+            terisi = f"{int(panel[kol].notna().sum())}/{len(panel)}"
+        else:
+            terisi = "tidak ada"
+        baris.append(
+            f"| `{kol}` | {d['jenis']} | {d['rumus']} | {d['input']} | {d['alasan']} | {terisi} |"
+        )
+    return baris
+
+
 def _tabel_gold(gold):
     baris = [
         "| Tabel | Baris | Kolom |",
         "|---|---:|---:|",
     ]
     for nama, tabel in gold.items():
+        if not hasattr(tabel, "columns"):
+            continue
         baris.append(f"| data/gold/{nama}.parquet | {len(tabel)} | {len(tabel.columns)} |")
+    return baris
+
+
+def _tabel_sql(gold):
+    sql = gold.get("sql")
+    if not isinstance(sql, dict) or not sql.get("parquet"):
+        return ["_Basis data SQL belum tersedia._"]
+    baris = [
+        "| Tabel SQL | Berkas parquet | Baris |",
+        "|---|---|---:|",
+    ]
+    for nama, jalur in sorted(sql["parquet"].items()):
+        try:
+            jumlah = len(pd.read_parquet(jalur))
+        except Exception:
+            jumlah = "—"
+        baris.append(f"| `{nama}` | `{Path(jalur).as_posix()}` | {jumlah} |")
+    return baris
+
+
+def _tabel_rekonsiliasi(gold):
+    rekon = gold.get("rekonsiliasi_nasional")
+    if rekon is None or len(rekon) == 0:
+        return ["_Tabel rekonsiliasi belum tersedia._"]
+    baris = [
+        "| Ukuran | Nilai |",
+        "|---|---:|",
+        f"| Baris | {len(rekon)} |",
+        f"| Kolom | {len(rekon.columns)} |",
+    ]
+    for status, n in rekon["status_pasangan"].value_counts().sort_index().items():
+        baris.append(f"| `status_pasangan={status}` | {int(n)} |")
+    for kat, n in rekon["kategori_penjelasan"].value_counts(dropna=False).sort_index().items():
+        label = "tidak diisi (tanpa pasangan)" if pd.isna(kat) else kat
+        baris.append(f"| `kategori_penjelasan={label}` | {int(n)} |")
     return baris
 
 
@@ -159,7 +218,7 @@ def tulis(silver, gold, jalur):
         "# Data dictionary — Kelompok 16, kasus 16",
         "",
         "Dihasilkan oleh `src/validasi/dokumentasi.py` dari isi `data/silver/silver.parquet` dan",
-        "`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold akan dilengkapi pada Sprint 2–3.",
+        "`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold dan turunannya didokumentasikan di bawah.",
         "",
         *_tabel_pencocokan(silver),
         "",
@@ -185,11 +244,37 @@ def tulis(silver, gold, jalur):
         "Rincian ILOSTAT memakai kode dimensi asli dari DSD, mis. `SEX=SEX_T;AGE=AGE_YTHADULT_YGE15`,",
         "karena snapshot DSD tidak memuat codelist/label kode (keputusan K-004).",
         "",
+        "## Kolom Turunan Gold `data/gold/panel_provinsi.parquet`",
+        "",
+        "Kolom turunan ditambahkan sebagai kolom baru; kolom nilai asli "
+        "(`var2011__total`, `var2016__*`, `var1254__total`) tetap ada dan tidak diganti.",
+        "Rumus dan alasan setiap kolom mengikuti keputusan K-028 di `log-keputusan.csv`.",
+        "",
+        *_tabel_turunan(gold),
+        "",
         "## data/gold/",
         "",
         *_tabel_gold(gold),
         "",
-        "Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional dan kamus kolom Gold menyusul di Sprint 2–3.",
+        "Panel Gold memuat seri BPS provinsi beserta kolom turunan; nilai asli tidak diganti.",
+        "Pembanding nasional tersedia di `data/gold/tabel_nasional.parquet`; basis data SQL dan",
+        "tabel rekonsiliasi dijelaskan di bawah.",
+        "",
+        "## Basis Data SQL `data/gold/gold.duckdb`",
+        "",
+        "Dibentuk oleh `src/gold/gold.py` dari Silver; setiap tabel juga diekspor ke",
+        "`data/gold/*.parquet`. Berkas `*.duckdb` tidak di-commit (lihat `.gitignore`) dan",
+        "dibuat ulang oleh `python pipeline.py`.",
+        "",
+        *_tabel_sql(gold),
+        "",
+        "## Tabel Rekonsiliasi `data/gold/rekonsiliasi_nasional.parquet`",
+        "",
+        "Dibentuk oleh `src/gold/rekonsiliasi.py` dari `tabel_nasional.parquet`.",
+        "`selisih = nilai_utama - nilai_pembanding`; kategori hanya diisi untuk baris",
+        "berpasangan. Integrasi ke pipeline mengikuti keputusan K-029.",
+        "",
+        *_tabel_rekonsiliasi(gold),
     ]
     jalur.write_text("\n".join(baris) + "\n", encoding="utf-8", newline="\n")
     return len(silver.columns)

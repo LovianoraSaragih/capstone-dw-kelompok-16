@@ -11,7 +11,11 @@
 | imputasi_memiliki_penanda | LOLOS | Tidak ada imputasi nilai dalam transformasi Silver; nilai berasal dari observasi sumber. Imputasi di masa depan wajib memakai is_imputed. |
 | kelengkapan_panel_per_seri | LOLOS | 3 seri dilaporkan |
 | gold_panel_terbentuk | LOLOS | 304 baris |
+| gold_nilai_asli_utuh | LOLOS | Seluruh kolom nilai asli tersedia |
+| gold_turunan_lengkap | LOLOS | 16 kolom turunan tersedia |
 | gold_kunci_unik | LOLOS | 0 duplikat |
+| rekonsiliasi_terbentuk | LOLOS | 238 baris; berkas tersimpan |
+| basisdata_sql_terbentuk | LOLOS | 7 tabel diekspor; basis data tersimpan |
 
 ## Kelengkapan panel per seri
 
@@ -25,6 +29,6 @@ Sumber: `reports/kelengkapan.csv`.
 
 ## Ringkasan
 
-Total: 10/10 aturan lolos.
+Total: 14/14 aturan lolos.
 
 Nilai kosong pada grid menunjukkan tidak adanya observasi sumber dan tidak diimputasi.

@@ -8,6 +8,7 @@ import pandas as pd
 
 from src.common.manifest import baca
 from src.common.skema import KUNCI, periksa_silver
+from src.gold.turunan import KOLOM_ASLI, KOLOM_TURUNAN
 
 from . import dokumentasi
 
@@ -157,7 +158,37 @@ def _aturan(silver, gold, manifest, panel):
         f"{0 if gold_panel is None else len(gold_panel)} baris"
     ))
 
-    # 10. Keunikan kunci Gold
+    # 10. Nilai asli tetap ada
+    if gold_panel is None or gold_panel.empty:
+        aturan.append(("gold_nilai_asli_utuh", False, "Panel Gold tidak ada"))
+    else:
+        kurang_asli = [k for k in KOLOM_ASLI if k not in gold_panel.columns]
+        aturan.append((
+            "gold_nilai_asli_utuh",
+            not kurang_asli,
+            (
+                "Seluruh kolom nilai asli tersedia"
+                if not kurang_asli
+                else f"Kolom nilai asli hilang: {kurang_asli}"
+            )
+        ))
+
+    # 11. Kolom turunan tersedia
+    if gold_panel is None or gold_panel.empty:
+        aturan.append(("gold_turunan_lengkap", False, "Panel Gold tidak ada"))
+    else:
+        kurang_turunan = [k for k in KOLOM_TURUNAN if k not in gold_panel.columns]
+        aturan.append((
+            "gold_turunan_lengkap",
+            not kurang_turunan,
+            (
+                f"{len(KOLOM_TURUNAN)} kolom turunan tersedia"
+                if not kurang_turunan
+                else f"Kolom turunan hilang: {kurang_turunan}"
+            )
+        ))
+
+    # 12. Keunikan kunci Gold
     panjang = gold.get("panel_provinsi_long")
 
     if panjang is None:
@@ -172,6 +203,59 @@ def _aturan(silver, gold, manifest, panel):
             "gold_kunci_unik",
             dup == 0,
             f"{dup} duplikat"
+        ))
+
+    # 13. Tabel rekonsiliasi terbentuk
+    rekon = gold.get("rekonsiliasi_nasional")
+    kolom_rekon = {
+        "id_pasangan", "status_pasangan", "selisih",
+        "kategori_penjelasan",
+    }
+    jalur_rekon = AKAR / "data" / "gold" / "rekonsiliasi_nasional.parquet"
+
+    if rekon is None or len(rekon) == 0:
+        aturan.append((
+            "rekonsiliasi_terbentuk",
+            False,
+            "Tabel rekonsiliasi tidak ada atau kosong"
+        ))
+    else:
+        kurang_rekon = sorted(kolom_rekon - set(rekon.columns))
+        berkas_ada = jalur_rekon.is_file()
+        aturan.append((
+            "rekonsiliasi_terbentuk",
+            not kurang_rekon and berkas_ada,
+            (
+                f"{len(rekon)} baris; berkas tersimpan"
+                if not kurang_rekon and berkas_ada
+                else f"kolom hilang: {kurang_rekon}; berkas ada: {berkas_ada}"
+            )
+        ))
+
+    # 14. Basis data SQL dan ekspor tabelnya terbentuk
+    sql = gold.get("sql")
+    tabel_sql = sql.get("parquet", {}) if isinstance(sql, dict) else {}
+
+    if not isinstance(sql, dict) or "db" not in sql:
+        aturan.append((
+            "basisdata_sql_terbentuk",
+            False,
+            "Basis data SQL tidak ada"
+        ))
+    else:
+        db_ada = Path(sql["db"]).is_file()
+        tabel_ada = (
+            len(tabel_sql) >= 7
+            and all(Path(p).is_file() for p in tabel_sql.values())
+        )
+        aturan.append((
+            "basisdata_sql_terbentuk",
+            db_ada and tabel_ada,
+            (
+                f"{len(tabel_sql)} tabel diekspor; basis data tersimpan"
+                if db_ada and tabel_ada
+                else f"basis data ada: {db_ada}; tabel lengkap: {tabel_ada}"
+            )
         ))
 
     return aturan
