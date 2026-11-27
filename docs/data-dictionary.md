@@ -1,7 +1,7 @@
 # Data dictionary — Kelompok 16, kasus 16
 
 Dihasilkan oleh `src/validasi/dokumentasi.py` dari isi `data/silver/silver.parquet` dan
-`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold akan dilengkapi pada Sprint 2–3.
+`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold dan turunannya didokumentasikan di bawah.
 
 ## Pencocokan Kamus dengan Tabel Silver Aktual
 
@@ -89,13 +89,39 @@ Contoh baris diambil langsung dari `data/silver/silver.parquet` (baris indeks 0)
 Rincian ILOSTAT memakai kode dimensi asli dari DSD, mis. `SEX=SEX_T;AGE=AGE_YTHADULT_YGE15`,
 karena snapshot DSD tidak memuat codelist/label kode (keputusan K-004).
 
+## Kolom Turunan Gold `data/gold/panel_provinsi.parquet`
+
+Kolom turunan ditambahkan sebagai kolom baru; kolom nilai asli (`var2011__total`, `var2016__*`, `var1254__total`) tetap ada dan tidak diganti.
+Rumus dan alasan setiap kolom mengikuti keputusan K-028 di `log-keputusan.csv`.
+
+| Kolom | Jenis | Rumus | Input | Alasan | Terisi |
+|---|---|---|---|---|---:|
+| `layanan_dasar_indeks` | analisis | rata-rata komponen var2016 yang tidak kosong: air_minum, sanitasi, fasilitas_kesehatan, mobilitas | var2016__air_minum, var2016__sanitasi, var2016__fasilitas_kesehatan, var2016__mobilitas | Ringkasan akses layanan dasar dalam satu angka 0-100; mobilitas tidak diimputasi sehingga hanya komponen tersedia yang dihitung. | 160/304 |
+| `layanan_dasar_n_komponen` | analisis | jumlah komponen var2016 yang tidak kosong pada baris tersebut | var2016__air_minum, var2016__sanitasi, var2016__fasilitas_kesehatan, var2016__mobilitas | Menunjukkan berapa komponen yang benar-benar menyusun indeks; nilai 3 berarti mobilitas kosong. | 304/304 |
+| `layanan_dasar_terendah` | analisis | nilai minimum komponen var2016 yang tidak kosong | var2016__air_minum, var2016__sanitasi, var2016__fasilitas_kesehatan, var2016__mobilitas | Mengidentifikasi jenis layanan dasar yang paling lemah di suatu provinsi pada tahun tertentu. | 160/304 |
+| `layanan_dasar_rentang` | analisis | maksimum komponen dikurangi minimum komponen; kosong bila komponen tersedia kurang dari dua | var2016__air_minum, var2016__sanitasi, var2016__fasilitas_kesehatan, var2016__mobilitas | Mengukur ketimpangan antarjenis layanan dasar di dalam satu provinsi. | 160/304 |
+| `var2011_nasional` | pendukung | nilai var2011 total pada wilayah_kode 9999 untuk periode yang sama | Silver bps var2011 rincian total wilayah 9999 | Pembanding nasional resmi untuk menghitung selisih provinsi tanpa membuat rata-rata provinsi baru. | 228/304 |
+| `var1254_nasional` | pendukung | nilai var1254 total pada wilayah_kode 9999 untuk periode yang sama | Silver bps var1254 rincian total wilayah 9999 | Pembanding nasional resmi untuk rasio pendapatan pemerintah terhadap PDB. | 76/304 |
+| `layanan_dasar_nasional` | pendukung | rata-rata komponen var2016 yang tidak kosong pada wilayah_kode 9999 untuk periode yang sama | Silver bps var2016 wilayah 9999 | Pembanding nasional untuk indeks layanan dasar dengan formula yang sama seperti provinsi. | 190/304 |
+| `layanan_dasar_n_komponen_nasional` | pendukung | jumlah komponen var2016 yang tidak kosong pada wilayah_kode 9999 untuk periode yang sama | Silver bps var2016 wilayah 9999 | Menunjukkan jumlah komponen penyusun indeks nasional. | 190/304 |
+| `var2011_gap_nasional` | analisis | var2011__total provinsi dikurangi var2011_nasional pada periode yang sama | var2011__total, var2011_nasional | Selisih proporsi penduduk di bawah 50 persen median terhadap nasional; nilai positif berarti ketimpangan lebih tinggi dari nasional. | 187/304 |
+| `layanan_dasar_gap_nasional` | analisis | layanan_dasar_indeks provinsi dikurangi layanan_dasar_nasional pada periode yang sama | layanan_dasar_indeks, layanan_dasar_nasional | Selisih akses layanan dasar terhadap nasional; nilai negatif berarti tertinggal dari nasional. | 160/304 |
+| `var1254_gap_nasional` | analisis | var1254__total provinsi dikurangi var1254_nasional pada periode yang sama | var1254__total, var1254_nasional | Selisih rasio pendapatan pemerintah terhadap PDB dari nasional; menggambarkan kapasitas fiskal relatif. | 64/304 |
+| `perubahan_layanan_dasar` | analisis | layanan_dasar_indeks tahun t dikurangi tahun t-1; kosong bila t-1 tidak tersedia | layanan_dasar_indeks, periode | Mengukur arah dan besar perubahan akses layanan dasar antartahun berurutan tanpa mencampur loncatan tahun. | 128/304 |
+| `perubahan_var2011` | analisis | var2011__total tahun t dikurangi tahun t-1; kosong bila t-1 tidak tersedia | var2011__total, periode | Mengukur perubahan relatif kemiskinan terhadap median antartahun berurutan. | 155/304 |
+| `perubahan_var1254` | analisis | var1254__total tahun t dikurangi tahun t-1; kosong bila t-1 tidak tersedia | var1254__total, periode | Mengukur perubahan rasio pendapatan pemerintah terhadap PDB antartahun berurutan. | 32/304 |
+| `peringkat_var2011` | analisis | peringkat var2011__total lintas provinsi per periode; 1 = paling rendah | var2011__total, periode | Memudahkan analisis ketimpangan lintas provinsi pada tahun yang sama. | 187/304 |
+| `peringkat_layanan_dasar` | analisis | peringkat layanan_dasar_indeks lintas provinsi per periode; 1 = paling tinggi | layanan_dasar_indeks, periode | Memudahkan analisis ketimpangan akses layanan dasar lintas provinsi pada tahun yang sama. | 160/304 |
+
 ## data/gold/
 
 | Tabel | Baris | Kolom |
 |---|---:|---:|
-| data/gold/panel_provinsi.parquet | 304 | 10 |
+| data/gold/panel_provinsi.parquet | 304 | 26 |
 | data/gold/panel_provinsi_long.parquet | 731 | 13 |
 | data/gold/kelengkapan_panel.parquet | 28 | 10 |
 | data/gold/papua_historis.parquet | 46 | 19 |
+| data/gold/tabel_nasional.parquet | 360 | 18 |
 
-Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional dan kamus kolom Gold menyusul di Sprint 2–3.
+Panel Gold memuat seri BPS provinsi beserta kolom turunan; nilai asli tidak diganti.
+Pembanding nasional tersedia di `data/gold/tabel_nasional.parquet`.

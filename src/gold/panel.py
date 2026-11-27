@@ -12,6 +12,8 @@ from src.silver.panel import (
 )
 from src.ekstraksi.bps import domain_bps
 
+from . import turunan
+
 
 AKAR = Path(__file__).resolve().parents[2]
 GOLD = AKAR / "data" / "gold"
@@ -302,6 +304,7 @@ def jalankan(silver):
 
     panjang = bentuk_panel_panjang(data)
     lebar = bentuk_panel_lebar(data)
+    lebar = turunan.tambah_kolom_turunan(lebar, silver)
     kelengkapan = laporan_kelengkapan(data)
 
     # Pemeriksaan keunikan kunci panel.

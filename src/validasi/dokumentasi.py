@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from src.gold.turunan import DESKRIPSI_TURUNAN
+
 
 DESKRIPSI_KOLOM = {
     "sumber": ("string", "—", "tidak", "bps, ilostat, wdi", "folder data/raw (K-016)", "nama sumber data"),
@@ -142,6 +144,26 @@ def _tabel_seri(silver):
     return baris
 
 
+def _tabel_turunan(gold):
+    panel = gold.get("panel_provinsi")
+    if panel is None or panel.empty:
+        return ["_Panel Gold belum tersedia._"]
+    baris = [
+        "| Kolom | Jenis | Rumus | Input | Alasan | Terisi |",
+        "|---|---|---|---|---|---:|",
+    ]
+    for d in DESKRIPSI_TURUNAN:
+        kol = d["kolom"]
+        if kol in panel.columns:
+            terisi = f"{int(panel[kol].notna().sum())}/{len(panel)}"
+        else:
+            terisi = "tidak ada"
+        baris.append(
+            f"| `{kol}` | {d['jenis']} | {d['rumus']} | {d['input']} | {d['alasan']} | {terisi} |"
+        )
+    return baris
+
+
 def _tabel_gold(gold):
     baris = [
         "| Tabel | Baris | Kolom |",
@@ -159,7 +181,7 @@ def tulis(silver, gold, jalur):
         "# Data dictionary — Kelompok 16, kasus 16",
         "",
         "Dihasilkan oleh `src/validasi/dokumentasi.py` dari isi `data/silver/silver.parquet` dan",
-        "`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold akan dilengkapi pada Sprint 2–3.",
+        "`data/gold/*.parquet` pada setiap `python pipeline.py`. Kolom Gold dan turunannya didokumentasikan di bawah.",
         "",
         *_tabel_pencocokan(silver),
         "",
@@ -185,11 +207,20 @@ def tulis(silver, gold, jalur):
         "Rincian ILOSTAT memakai kode dimensi asli dari DSD, mis. `SEX=SEX_T;AGE=AGE_YTHADULT_YGE15`,",
         "karena snapshot DSD tidak memuat codelist/label kode (keputusan K-004).",
         "",
+        "## Kolom Turunan Gold `data/gold/panel_provinsi.parquet`",
+        "",
+        "Kolom turunan ditambahkan sebagai kolom baru; kolom nilai asli "
+        "(`var2011__total`, `var2016__*`, `var1254__total`) tetap ada dan tidak diganti.",
+        "Rumus dan alasan setiap kolom mengikuti keputusan K-028 di `log-keputusan.csv`.",
+        "",
+        *_tabel_turunan(gold),
+        "",
         "## data/gold/",
         "",
         *_tabel_gold(gold),
         "",
-        "Panel Gold Sprint 1 hanya berisi seri BPS provinsi; integrasi pembanding nasional dan kamus kolom Gold menyusul di Sprint 2–3.",
+        "Panel Gold memuat seri BPS provinsi beserta kolom turunan; nilai asli tidak diganti.",
+        "Pembanding nasional tersedia di `data/gold/tabel_nasional.parquet`.",
     ]
     jalur.write_text("\n".join(baris) + "\n", encoding="utf-8", newline="\n")
     return len(silver.columns)

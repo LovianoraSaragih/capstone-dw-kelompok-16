@@ -8,6 +8,7 @@ import pandas as pd
 
 from src.common.manifest import baca
 from src.common.skema import KUNCI, periksa_silver
+from src.gold.turunan import KOLOM_ASLI, KOLOM_TURUNAN
 
 from . import dokumentasi
 
@@ -157,7 +158,37 @@ def _aturan(silver, gold, manifest, panel):
         f"{0 if gold_panel is None else len(gold_panel)} baris"
     ))
 
-    # 10. Keunikan kunci Gold
+    # 10. Nilai asli tetap ada
+    if gold_panel is None or gold_panel.empty:
+        aturan.append(("gold_nilai_asli_utuh", False, "Panel Gold tidak ada"))
+    else:
+        kurang_asli = [k for k in KOLOM_ASLI if k not in gold_panel.columns]
+        aturan.append((
+            "gold_nilai_asli_utuh",
+            not kurang_asli,
+            (
+                "Seluruh kolom nilai asli tersedia"
+                if not kurang_asli
+                else f"Kolom nilai asli hilang: {kurang_asli}"
+            )
+        ))
+
+    # 11. Kolom turunan tersedia
+    if gold_panel is None or gold_panel.empty:
+        aturan.append(("gold_turunan_lengkap", False, "Panel Gold tidak ada"))
+    else:
+        kurang_turunan = [k for k in KOLOM_TURUNAN if k not in gold_panel.columns]
+        aturan.append((
+            "gold_turunan_lengkap",
+            not kurang_turunan,
+            (
+                f"{len(KOLOM_TURUNAN)} kolom turunan tersedia"
+                if not kurang_turunan
+                else f"Kolom turunan hilang: {kurang_turunan}"
+            )
+        ))
+
+    # 12. Keunikan kunci Gold
     panjang = gold.get("panel_provinsi_long")
 
     if panjang is None:
