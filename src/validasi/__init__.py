@@ -205,6 +205,59 @@ def _aturan(silver, gold, manifest, panel):
             f"{dup} duplikat"
         ))
 
+    # 13. Tabel rekonsiliasi terbentuk
+    rekon = gold.get("rekonsiliasi_nasional")
+    kolom_rekon = {
+        "id_pasangan", "status_pasangan", "selisih",
+        "kategori_penjelasan",
+    }
+    jalur_rekon = AKAR / "data" / "gold" / "rekonsiliasi_nasional.parquet"
+
+    if rekon is None or len(rekon) == 0:
+        aturan.append((
+            "rekonsiliasi_terbentuk",
+            False,
+            "Tabel rekonsiliasi tidak ada atau kosong"
+        ))
+    else:
+        kurang_rekon = sorted(kolom_rekon - set(rekon.columns))
+        berkas_ada = jalur_rekon.is_file()
+        aturan.append((
+            "rekonsiliasi_terbentuk",
+            not kurang_rekon and berkas_ada,
+            (
+                f"{len(rekon)} baris; berkas tersimpan"
+                if not kurang_rekon and berkas_ada
+                else f"kolom hilang: {kurang_rekon}; berkas ada: {berkas_ada}"
+            )
+        ))
+
+    # 14. Basis data SQL dan ekspor tabelnya terbentuk
+    sql = gold.get("sql")
+    tabel_sql = sql.get("parquet", {}) if isinstance(sql, dict) else {}
+
+    if not isinstance(sql, dict) or "db" not in sql:
+        aturan.append((
+            "basisdata_sql_terbentuk",
+            False,
+            "Basis data SQL tidak ada"
+        ))
+    else:
+        db_ada = Path(sql["db"]).is_file()
+        tabel_ada = (
+            len(tabel_sql) >= 7
+            and all(Path(p).is_file() for p in tabel_sql.values())
+        )
+        aturan.append((
+            "basisdata_sql_terbentuk",
+            db_ada and tabel_ada,
+            (
+                f"{len(tabel_sql)} tabel diekspor; basis data tersimpan"
+                if db_ada and tabel_ada
+                else f"basis data ada: {db_ada}; tabel lengkap: {tabel_ada}"
+            )
+        ))
+
     return aturan
 
 

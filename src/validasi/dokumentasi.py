@@ -170,7 +170,44 @@ def _tabel_gold(gold):
         "|---|---:|---:|",
     ]
     for nama, tabel in gold.items():
+        if not hasattr(tabel, "columns"):
+            continue
         baris.append(f"| data/gold/{nama}.parquet | {len(tabel)} | {len(tabel.columns)} |")
+    return baris
+
+
+def _tabel_sql(gold):
+    sql = gold.get("sql")
+    if not isinstance(sql, dict) or not sql.get("parquet"):
+        return ["_Basis data SQL belum tersedia._"]
+    baris = [
+        "| Tabel SQL | Berkas parquet | Baris |",
+        "|---|---|---:|",
+    ]
+    for nama, jalur in sorted(sql["parquet"].items()):
+        try:
+            jumlah = len(pd.read_parquet(jalur))
+        except Exception:
+            jumlah = "—"
+        baris.append(f"| `{nama}` | `{Path(jalur).as_posix()}` | {jumlah} |")
+    return baris
+
+
+def _tabel_rekonsiliasi(gold):
+    rekon = gold.get("rekonsiliasi_nasional")
+    if rekon is None or len(rekon) == 0:
+        return ["_Tabel rekonsiliasi belum tersedia._"]
+    baris = [
+        "| Ukuran | Nilai |",
+        "|---|---:|",
+        f"| Baris | {len(rekon)} |",
+        f"| Kolom | {len(rekon.columns)} |",
+    ]
+    for status, n in rekon["status_pasangan"].value_counts().sort_index().items():
+        baris.append(f"| `status_pasangan={status}` | {int(n)} |")
+    for kat, n in rekon["kategori_penjelasan"].value_counts(dropna=False).sort_index().items():
+        label = "tidak diisi (tanpa pasangan)" if pd.isna(kat) else kat
+        baris.append(f"| `kategori_penjelasan={label}` | {int(n)} |")
     return baris
 
 
@@ -220,7 +257,24 @@ def tulis(silver, gold, jalur):
         *_tabel_gold(gold),
         "",
         "Panel Gold memuat seri BPS provinsi beserta kolom turunan; nilai asli tidak diganti.",
-        "Pembanding nasional tersedia di `data/gold/tabel_nasional.parquet`.",
+        "Pembanding nasional tersedia di `data/gold/tabel_nasional.parquet`; basis data SQL dan",
+        "tabel rekonsiliasi dijelaskan di bawah.",
+        "",
+        "## Basis Data SQL `data/gold/gold.duckdb`",
+        "",
+        "Dibentuk oleh `src/gold/gold.py` dari Silver; setiap tabel juga diekspor ke",
+        "`data/gold/*.parquet`. Berkas `*.duckdb` tidak di-commit (lihat `.gitignore`) dan",
+        "dibuat ulang oleh `python pipeline.py`.",
+        "",
+        *_tabel_sql(gold),
+        "",
+        "## Tabel Rekonsiliasi `data/gold/rekonsiliasi_nasional.parquet`",
+        "",
+        "Dibentuk oleh `src/gold/rekonsiliasi.py` dari `tabel_nasional.parquet`.",
+        "`selisih = nilai_utama - nilai_pembanding`; kategori hanya diisi untuk baris",
+        "berpasangan. Integrasi ke pipeline mengikuti keputusan K-029.",
+        "",
+        *_tabel_rekonsiliasi(gold),
     ]
     jalur.write_text("\n".join(baris) + "\n", encoding="utf-8", newline="\n")
     return len(silver.columns)

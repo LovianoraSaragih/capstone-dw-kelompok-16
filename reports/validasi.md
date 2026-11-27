@@ -14,6 +14,8 @@
 | gold_nilai_asli_utuh | LOLOS | Seluruh kolom nilai asli tersedia |
 | gold_turunan_lengkap | LOLOS | 16 kolom turunan tersedia |
 | gold_kunci_unik | LOLOS | 0 duplikat |
+| rekonsiliasi_terbentuk | LOLOS | 238 baris; berkas tersimpan |
+| basisdata_sql_terbentuk | LOLOS | 7 tabel diekspor; basis data tersimpan |
 
 ## Kelengkapan panel per seri
 
@@ -27,6 +29,6 @@ Sumber: `reports/kelengkapan.csv`.
 
 ## Ringkasan
 
-Total: 12/12 aturan lolos.
+Total: 14/14 aturan lolos.
 
 Nilai kosong pada grid menunjukkan tidak adanya observasi sumber dan tidak diimputasi.

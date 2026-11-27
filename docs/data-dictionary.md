@@ -122,6 +122,42 @@ Rumus dan alasan setiap kolom mengikuti keputusan K-028 di `log-keputusan.csv`.
 | data/gold/kelengkapan_panel.parquet | 28 | 10 |
 | data/gold/papua_historis.parquet | 46 | 19 |
 | data/gold/tabel_nasional.parquet | 360 | 18 |
+| data/gold/rekonsiliasi_nasional.parquet | 238 | 26 |
 
 Panel Gold memuat seri BPS provinsi beserta kolom turunan; nilai asli tidak diganti.
-Pembanding nasional tersedia di `data/gold/tabel_nasional.parquet`.
+Pembanding nasional tersedia di `data/gold/tabel_nasional.parquet`; basis data SQL dan
+tabel rekonsiliasi dijelaskan di bawah.
+
+## Basis Data SQL `data/gold/gold.duckdb`
+
+Dibentuk oleh `src/gold/gold.py` dari Silver; setiap tabel juga diekspor ke
+`data/gold/*.parquet`. Berkas `*.duckdb` tidak di-commit (lihat `.gitignore`) dan
+dibuat ulang oleh `python pipeline.py`.
+
+| Tabel SQL | Berkas parquet | Baris |
+|---|---|---:|
+| `dim_seri` | `data/gold/dim_seri.parquet` | 28 |
+| `dim_waktu` | `data/gold/dim_waktu.parquet` | 34 |
+| `dim_wilayah` | `data/gold/dim_wilayah.parquet` | 35 |
+| `fakta_observasi` | `data/gold/fakta_observasi.parquet` | 1137 |
+| `gold_metrik` | `data/gold/gold_metrik.parquet` | 1 |
+| `panel_lebar` | `data/gold/panel_lebar.parquet` | 306 |
+| `panel_tahunan` | `data/gold/panel_tahunan.parquet` | 1137 |
+
+## Tabel Rekonsiliasi `data/gold/rekonsiliasi_nasional.parquet`
+
+Dibentuk oleh `src/gold/rekonsiliasi.py` dari `tabel_nasional.parquet`.
+`selisih = nilai_utama - nilai_pembanding`; kategori hanya diisi untuk baris
+berpasangan. Integrasi ke pipeline mengikuti keputusan K-029.
+
+| Ukuran | Nilai |
+|---|---:|
+| Baris | 238 |
+| Kolom | 26 |
+| `status_pasangan=berpasangan` | 129 |
+| `status_pasangan=tanpa_pembanding` | 4 |
+| `status_pasangan=tanpa_utama` | 105 |
+| `kategori_penjelasan=belum terjelaskan` | 5 |
+| `kategori_penjelasan=cakupan berbeda` | 21 |
+| `kategori_penjelasan=definisi berbeda` | 103 |
+| `kategori_penjelasan=tidak diisi (tanpa pasangan)` | 109 |
